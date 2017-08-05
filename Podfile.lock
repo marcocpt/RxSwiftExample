@@ -1,0 +1,43 @@
+PODS:
+  - Action (2.2.2):
+    - RxCocoa (~> 3.0)
+    - RxSwift (~> 3.0)
+  - NSObject+Rx (2.3.0):
+    - RxSwift (~> 3.0)
+  - Realm (2.9.0):
+    - Realm/Headers (= 2.9.0)
+  - Realm/Headers (2.9.0)
+  - RealmSwift (2.9.0):
+    - Realm (= 2.9.0)
+  - RxCocoa (3.6.1):
+    - RxSwift (~> 3.6)
+  - RxDataSources (1.0.4):
+    - RxCocoa (~> 3.0)
+    - RxSwift (~> 3.0)
+  - RxRealm (0.5.2):
+    - RealmSwift (~> 2.4)
+    - RxSwift (~> 3.1)
+  - RxSwift (3.6.1)
+
+DEPENDENCIES:
+  - Action (~> 2.2.1)
+  - NSObject+Rx (~> 2.0)
+  - RealmSwift (~> 2.4)
+  - RxCocoa (~> 3.2)
+  - RxDataSources (~> 1.0.2)
+  - RxRealm (~> 0.5.1)
+  - RxSwift (~> 3.2)
+
+SPEC CHECKSUMS:
+  Action: 9a3d372fb15b057cce7d069a5e1ece8da12483d4
+  NSObject+Rx: 38170f84b948152c05c57260cb853e387a5519d1
+  Realm: f14ab1673502559cb16592ddb8f383c474c13e05
+  RealmSwift: 16ad2c187042c4934f49750375582fe508627dcb
+  RxCocoa: 84a08739ab186248c7f31ce4ee92d6f8a947d690
+  RxDataSources: b3389acc5fe2eefb8fcd81a2b76a876ad08bc82a
+  RxRealm: df024f04e64c3a9723dab63a6ec8621b3db6473f
+  RxSwift: f9de85ea20cd2f7716ee5409fc13523dc638e4e4
+
+PODFILE CHECKSUM: 61e568146c345b35728cb748d99adfaa66f14a0c
+
+COCOAPODS: 1.1.1
