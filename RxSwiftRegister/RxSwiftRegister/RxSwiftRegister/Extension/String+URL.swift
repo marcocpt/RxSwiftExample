@@ -7,6 +7,7 @@
 //
 
 extension String {
+  //转换字符串为urlHostAllowed
   var URLEscaped: String {
     return self.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""
   }

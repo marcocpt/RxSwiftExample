@@ -53,9 +53,7 @@ extension ValidationResult {
     
     }
   }
-}
-
-extension ValidationResult {
+  
   var isValid: Bool {
     switch self {
     case .ok:
@@ -63,6 +61,13 @@ extension ValidationResult {
     case .empty, .failed, .validating:
       return false
     }
+  }
+}
+
+//distinctUntilChanged需要
+extension ValidationResult: Equatable {
+  static func ==(lhs: ValidationResult, rhs: ValidationResult) -> Bool {
+    return lhs.description == rhs.description
   }
 }
 
@@ -76,9 +81,4 @@ extension Reactive where Base: UILabel {
   }
 }
 
-//distinctUntilChanged需要
-extension ValidationResult: Equatable {
-  static func ==(lhs: ValidationResult, rhs: ValidationResult) -> Bool {
-    return lhs.description == rhs.description
-  }
-}
+
