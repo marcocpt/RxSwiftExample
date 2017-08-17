@@ -7,20 +7,21 @@
 //
 
 import RxSwift
+import RxCocoa
 
 struct RegisterViewModel {
-  let validatedUsername: Observable<ValidationResult>
-  let validatedPassword: Observable<ValidationResult>
-  let validatedPasswordRepeated: Observable<ValidationResult>
+  let validatedUsername: Driver<ValidationResult>
+  let validatedPassword: Driver<ValidationResult>
+  let validatedPasswordRepeated: Driver<ValidationResult>
   
-  let registerEnabled: Observable<Bool>
-  let registered: Observable<Bool>
-  let registering: Observable<Bool>
+  let registerEnabled: Driver<Bool>
+  let registered: Driver<Bool>
+  let registering: Driver<Bool>
   
-  let registerTap = PublishSubject<Void>()
+  let registerTap = Variable<Void>()
   
-  init(input:(username: Observable<String>, password: Observable<String>,
-    repeatedPassword: Observable<String>, registerTap: Observable<Void>)) {
+  init(input:(username: Driver<String>, password: Driver<String>,
+    repeatedPassword: Driver<String>, registerTap: Driver<Void>)) {
     
     let API = GitHubAPI.sharedAPI
     let minPasswordCount = 5
@@ -29,14 +30,14 @@ struct RegisterViewModel {
     //flatMap 则不会
     //FIXME: 断网时一直显示"Username already taken"
     validatedUsername = input.username
-      .flatMapLatest { (username) -> Observable<ValidationResult> in
+      .flatMapLatest { (username) -> Driver<ValidationResult> in
         //是否为空
         if username.characters.count == 0 {
-          return Observable.just(.empty)
+          return Driver.just(.empty)
         }
         //是否是数字和字母
         if username.rangeOfCharacter(from: CharacterSet.alphanumerics.inverted) != nil {
-          return  Observable.just(.failed(message: "Username can only contain numbers or digits"))
+          return  Driver.just(.failed(message: "Username can only contain numbers or digits"))
         }
         
         let loadingValue = ValidationResult.validating
@@ -52,11 +53,8 @@ struct RegisterViewModel {
             }
           }
           .startWith(loadingValue)  //最开始发射一个正在验证的值
-          .observeOn(MainScheduler.instance)   //将监听事件绑定到主线程
-          .catchErrorJustReturn(.failed(message: "Error contacting server"))
+          .asDriver(onErrorJustReturn: .failed(message: "Error contacting server"))
       }
-      .distinctUntilChanged()
-      .shareReplay(1)
     
     validatedPassword = input.password
       .map { password in
@@ -71,10 +69,8 @@ struct RegisterViewModel {
         
         return .ok(message: "Password acceptable")
       }
-      .distinctUntilChanged()
-      .shareReplay(1)
     
-    validatedPasswordRepeated = Observable .combineLatest(
+    validatedPasswordRepeated = Driver.combineLatest(
       input.password, input.repeatedPassword){
         password, repeatedPassword in
         if repeatedPassword.characters.count == 0 {
@@ -88,14 +84,12 @@ struct RegisterViewModel {
           return .failed(message: "Password different")
         }
       }
-      .distinctUntilChanged()
-      .shareReplay(1)
     
     let registering = ActivityIndicator()
     
-    self.registering = registering.asObservable()
+    self.registering = registering.asDriver()
     
-    registerEnabled = Observable.combineLatest(validatedUsername, validatedPassword, validatedPasswordRepeated, self.registering){
+    registerEnabled = Driver.combineLatest(validatedUsername, validatedPassword, validatedPasswordRepeated, self.registering){
       username, password, repeatedPassword, registering in
       username.isValid &&
         password.isValid &&
@@ -103,18 +97,16 @@ struct RegisterViewModel {
         !registering
       }
       .distinctUntilChanged()
-      .shareReplay(1)
     
-    let usernameAndPassword = Observable.combineLatest(input.username, input.password) { ($0, $1) }
+    let usernameAndPassword = Driver.combineLatest(input.username, input.password) { ($0, $1) }
     
     //合并注册点击和账号密码序列，每次注册点击，从第二个序列取最新的值
-    registered = self.registerTap.asObservable().withLatestFrom(usernameAndPassword)
+    registered = self.registerTap.asDriver().withLatestFrom(usernameAndPassword)
       .flatMapLatest{
         (username, password) in
         return API.register(username, password: password)
-          .observeOn(MainScheduler.instance)
-          .catchErrorJustReturn(false)
           .trackActivity(registering)  //用于监控序列是计算中还是结束
-      }.shareReplay(1)
+          .asDriver(onErrorJustReturn: false)
+      }
   }
 }
