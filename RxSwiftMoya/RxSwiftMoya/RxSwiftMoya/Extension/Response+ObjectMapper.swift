@@ -29,10 +29,11 @@ public extension Response {
         
         let status = try mapObject(Status.self)
         
-         guard let array = status.result as? [[String : Any]], let objects = Mapper<T>(context: context).mapArray(JSONArray: array) else {
+         guard let array = status.result as? [[String : Any]] else {
             throw AMError.ParseResultError(status)
         }
-        
+        let objects = Mapper<T>(context: context).mapArray(JSONArray: array)
+      
         return objects
     }
 }

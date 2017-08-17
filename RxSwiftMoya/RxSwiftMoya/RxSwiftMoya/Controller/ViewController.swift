@@ -22,8 +22,7 @@ class ViewController: UIViewController {
         UserProvider
             .request(.list(0, 10))
             .mapResult(User.self)
-            .subscribe{
-                event in
+            .subscribe{ event in
                 switch event{
                 case .next(let users):
                     for user in users{
