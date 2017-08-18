@@ -15,6 +15,10 @@
 
 [RxSwift学习之旅 - Moya + ObjectMapper](http://www.alonemonkey.com/2017/03/30/rxswift-part-eight/)
 
+## RxSwiftMultithreading
+
+[RxSwift学习之旅 - 多线程调度](http://www.alonemonkey.com/2017/04/06/rxswift-part-thirteen/)
+
 ## RxSwiftRegister
 
 [RxSwift学习之旅 - 用户注册](http://www.alonemonkey.com/2017/03/27/rxswift-part-five/)
