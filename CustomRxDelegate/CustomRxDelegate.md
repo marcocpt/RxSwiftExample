@@ -2,6 +2,8 @@
 
 http://t.swift.gg/d/41-022-rxdelegate
 
+### <u>根据Swift3, RxSwift 3.6进行更新</u>
+
 > 本节示例代码均在 [RxExtensions] -> [RxDelegate]
 
 可能我们现在正打算在已有的项目中使用 Rx ，但是 `delegate` 这种东西并不适合我们链式处理问题，好在 **RxCocoa** 中已经给了我们一个比较完善的解决方案： **DelegateProxy** 。
@@ -59,48 +61,49 @@ DataSource 的处理稍微复杂一些，我们暂时先不谈（即不谈那些
 
 如果你去看我们常用的 tableView 的点击处理：
 
-```
-public var rx_itemDeselected: ControlEvent<NSIndexPath> {
-    let source = rx_delegate.observe(#selector(UITableViewDelegate.tableView(_:didDeselectRowAtIndexPath:)))
+```Swift
+public var itemSelected: ControlEvent<IndexPath> {
+    let source = self.delegate.methodInvoked(#selector(UITableViewDelegate.tableView(_:didSelectRowAt:)))
         .map { a in
-            return a[1] as! NSIndexPath
+            return try castOrThrow(IndexPath.self, a[1])
         }
+
     return ControlEvent(events: source)
 }
 ```
 
-它实际上是去观察当前的 `Selector` ，每当触发时都会发射一次值。我们完全可以参照这里的方式来处理我们自定义的 delegate （同时也适用于已有的 Cocoa 的 delegate ）。
+它实际上是去观察当前的 selector ，每当触发时都会发射一次值。我们完全可以参照这里的方式来处理我们自定义的 delegate （同时也适用于已有的 Cocoa 的 delegate ）。
 
 ## Custom RxDelegate
 
 假设我们的项目中封装了一个叫做 `RxDelegateButton` 的控件，我们为之添加了一个手势，这个手势会触发一个事件，这个事件是通过 delegate 传递的：
 
-```
+```Swift
 @objc protocol RxDelegateButtonDelegate: NSObjectProtocol {
-    @objc optional func trigger()
+  @objc optional func trigger()
 }
 
 class RxDelegateButton: UIButton {
+  
+  weak var delegate: RxDelegateButtonDelegate?
+  
+  override func awakeFromNib() {
+    super.awakeFromNib()
     
-    weak var delegagte: RxDelegateButtonDelegate?
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        
-        addTarget(self, action: #selector(RxDelegateButton.buttonTap), forControlEvents: .TouchUpInside)
-    }
-    
-    
-    @objc private func buttonTap() {
-        delegagte?.trigger?()
-    }
-
+    addTarget(self, action: #selector(RxDelegateButton.buttonTap), for: .touchUpInside)
+  }
+  
+  
+  @objc private func buttonTap() {
+    delegate?.trigger?()
+  }
+  
 }
 ```
 
 大概就像这样的一个控件，你可能会问我为什么 protocol 不写成下面这个样子：
 
-```
+```Swift
 protocol RxDelegateButtonDelegate: class {
     func trigger()
 }
@@ -110,7 +113,7 @@ protocol RxDelegateButtonDelegate: class {
 
 在 Storyboard 中添加一个 `RxDelegateButton` ，设置好 `delegate` ,
 
-```
+```Swift
 class RxDelegateViewController: UIViewController {
 
     @IBOutlet weak var delegateButton: RxDelegateButton!
@@ -118,7 +121,7 @@ class RxDelegateViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        delegateButton.delegagte = self
+        delegateButton.delegate = self
 
     }
 
@@ -139,19 +142,30 @@ extension RxDelegateViewController: RxDelegateButtonDelegate {
 
 我们需要建立一个 `RxDelegateButtonDelegateProxy` 。
 
-```
-class RxDelegateButtonDelegateProxy: DelegateProxy, RxDelegateButtonDelegate, DelegateProxyType  {
-    
-    static func currentDelegateFor(object: AnyObject) -> AnyObject? {
-        let rxDelegateButton = object as! RxDelegateButton
-        return rxDelegateButton.delegagte
+```swift
+class RxDelegateButtonDelegateProxy: DelegateProxy, DelegateProxyType, RxDelegateButtonDelegate  {
+  
+  static func currentDelegateFor(_ object: AnyObject) -> AnyObject? {
+    guard let rxDelegateButton = object as? RxDelegateButton else {
+      fatalError()
     }
-    
-    static func setCurrentDelegate(delegate: AnyObject?, toObject object: AnyObject) {
-        let rxDelegateButton = object as! RxDelegateButton
-        rxDelegateButton.delegagte = delegate as? RxDelegateButtonDelegate
+    return rxDelegateButton.delegate
+  }
+  
+  static func setCurrentDelegate(_ delegate: AnyObject?, toObject object: AnyObject) {
+    guard let rxDelegateButton = object as? RxDelegateButton else {
+      fatalError()
     }
-    
+    if delegate == nil {
+      rxDelegateButton.delegate = nil
+    } else {
+      guard let delegate = delegate as? RxDelegateButtonDelegate else {
+        fatalError()
+      }
+      rxDelegateButton.delegate = delegate
+    }
+  }
+  
 }
 ```
 
@@ -159,38 +173,51 @@ class RxDelegateButtonDelegateProxy: DelegateProxy, RxDelegateButtonDelegate, De
 
 对 Proxy 的使用也很简单，添加一个 extension ：
 
-```
-extension RxDelegateButton {
-    
-    var rx_delegate: DelegateProxy {
-        return proxyForObject(RxDelegateButtonDelegateProxy.self, self)
-    }
-    
-    var rx_trigger: ControlEvent<Void> {
-        let source = rx_delegate.observe(#selector(RxDelegateButtonDelegate.trigger)).map { _ in }
-        return ControlEvent(events: source)
-    }
+```swift
+extension Reactive where Base: RxDelegateButton {
+  var delegate: DelegateProxy {
+    return RxDelegateButtonDelegateProxy.proxyForObject(base)
+  }
+  
+  var SM_trigger: ControlEvent<Void> {
+    let source: Observable<Void> = delegate.sentMessage(#selector(RxDelegateButtonDelegate.trigger)).map { _ in }
+    return ControlEvent(events: source)
+  }
+  
+  var MI_trigger: ControlEvent<Void> {
+    let source: Observable<Void> = delegate.methodInvoked(#selector(RxDelegateButtonDelegate.trigger)).map { _ in }
+    return ControlEvent(events: source)
+  }
 }
 ```
 
 此时我们就可以直接去使用了：
 
-```
-delegateButton.rx_trigger
-        .subscribeNext {
-            print("rx_trigger")
-        }
-        .addDisposableTo(rx_disposeBag)
+```swift
+delegateButton.rx.delegate
+      .sentMessage(#selector(RxDelegateButtonDelegate.trigger))
+      .map { _ in }
+      .subscribe(onNext: {
+        print("\(Date()) - delegate_trigger")
+      })
+      .addDisposableTo(rx_disposeBag)
+    
+    delegateButton.rx.SM_trigger
+      .subscribe(onNext: {
+        print("\(Date()) - SM_trigger")
+      })
+      .addDisposableTo(rx_disposeBag)
 ```
 
 你还可以多添加一个：
 
-```
-delegateButton.rx_trigger
-        .subscribeNext {
-            print("rx_trigger")
-        }
-        .addDisposableTo(rx_disposeBag)
+```swift
+delegateButton.rx.MI_trigger
+  delegateButton.rx.MI_trigger
+    .subscribe(onNext: {
+      print("\(Date()) - MI_trigger")
+    })
+      .addDisposableTo(rx_disposeBag)
 ```
 
 甚至更多，这样一来我们就不需要将每一次的逻辑都添加到同一个 `trigger()` 中了。特别是应对多个控件一个 `delegate` 的场景，就比如一个 `ViewController` 中放入多个 `UITableView` 之类的情况。逻辑是否更清晰了一些呢？

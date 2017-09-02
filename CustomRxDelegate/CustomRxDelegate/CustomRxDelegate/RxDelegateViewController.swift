@@ -10,15 +10,14 @@ import UIKit
 import NSObject_Rx
 
 class RxDelegateViewController: UIViewController {
+
   @IBOutlet weak var delegateButton: RxDelegateButton!
 
-  
-  
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    delegateButton.delegagte = self
-    
+//    delegateButton.delegate = self
+
     delegateButton.rx.delegate
       .sentMessage(#selector(RxDelegateButtonDelegate.trigger))
       .map { _ in }
@@ -38,14 +37,13 @@ class RxDelegateViewController: UIViewController {
         print("\(Date()) - MI_trigger")
       })
       .addDisposableTo(rx_disposeBag)
-    
-    
+
   }
 
 }
 
-extension RxDelegateViewController: RxDelegateButtonDelegate {
-  func trigger() {
-    print("trigger")
-  }
-}
+//extension RxDelegateViewController: RxDelegateButtonDelegate {
+//  func trigger() {
+//    print("trigger")
+//  }
+//}

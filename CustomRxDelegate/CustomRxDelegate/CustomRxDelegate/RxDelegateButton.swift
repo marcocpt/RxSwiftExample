@@ -17,7 +17,7 @@ import RxCocoa
 
 class RxDelegateButton: UIButton {
   
-  weak var delegagte: RxDelegateButtonDelegate?
+  weak var delegate: RxDelegateButtonDelegate?
   
   override func awakeFromNib() {
     super.awakeFromNib()
@@ -27,7 +27,7 @@ class RxDelegateButton: UIButton {
   
   
   @objc private func buttonTap() {
-    delegagte?.trigger?()
+    delegate?.trigger?()
   }
   
 }

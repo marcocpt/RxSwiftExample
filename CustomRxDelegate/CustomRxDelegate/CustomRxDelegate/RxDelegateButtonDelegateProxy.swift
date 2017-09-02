@@ -11,13 +11,13 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-class RxDelegateButtonDelegateProxy: DelegateProxy, RxDelegateButtonDelegate, DelegateProxyType  {
+class RxDelegateButtonDelegateProxy: DelegateProxy, DelegateProxyType, RxDelegateButtonDelegate  {
   
   static func currentDelegateFor(_ object: AnyObject) -> AnyObject? {
     guard let rxDelegateButton = object as? RxDelegateButton else {
       fatalError()
     }
-    return rxDelegateButton.delegagte
+    return rxDelegateButton.delegate
   }
   
   static func setCurrentDelegate(_ delegate: AnyObject?, toObject object: AnyObject) {
@@ -25,12 +25,12 @@ class RxDelegateButtonDelegateProxy: DelegateProxy, RxDelegateButtonDelegate, De
       fatalError()
     }
     if delegate == nil {
-      rxDelegateButton.delegagte = nil
+      rxDelegateButton.delegate = nil
     } else {
       guard let delegate = delegate as? RxDelegateButtonDelegate else {
         fatalError()
       }
-      rxDelegateButton.delegagte = delegate
+      rxDelegateButton.delegate = delegate
     }
   }
   
