@@ -6,6 +6,10 @@ RxSwift_V1.0笔记——4: Observables and Subjects in Practice
 
 [RxSwift_v1.0笔记——24 Building a Complete RxSwift App](http://www.jianshu.com/p/451b93c70b40)
 
+## RxSwiftAction
+
+[RxSwift学习之旅 - Action](http://www.alonemonkey.com/2017/04/08/rxswift-part-fourteen/)
+
 
 ## RxSwiftCalculator
 
