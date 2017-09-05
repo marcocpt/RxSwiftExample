@@ -1,0 +1,17 @@
+# 下面行是指明依赖库的来源地址
+source 'https://github.com/CocoaPods/Specs.git'
+# 说明平台是ios，版本是9.0
+platform :ios, '9.0'
+# 忽略引入库的所有警告（强迫症者的福音啊）
+inhibit_all_warnings!
+# 如果使用use_frameworks!命令会在Pods工程下的Frameworks目录下生成依赖库的framework
+use_frameworks!
+
+# CustomRxDelegate target引入
+target 'CustomRxDelegate' do
+
+	pod 'RxSwift', '~> 3.6'
+	pod 'RxCocoa', '~> 3.6'
+  pod 'NSObject+Rx', '~> 2.3'
+  
+end

@@ -1,6 +1,8 @@
 platform :ios, '9.0'
 
 target 'QuickTodo' do
+	# 忽略引入库的所有警告（强迫症者的福音啊）
+	inhibit_all_warnings!
   use_frameworks!
 
   pod 'RxSwift', '~> 3.2'
