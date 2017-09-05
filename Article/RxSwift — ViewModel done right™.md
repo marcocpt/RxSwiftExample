@@ -147,18 +147,35 @@ The top 3 protocols define the purpose of the ViewModel. They follow simple rule
 
 - **Actions always are of type **`Action<T, U>` or `CocoaAction` (which is just a typealias for `Action<Void, Void>`): you don’t really have a choice though, just don’t put anything else in there that’s not from the `Action` module
 
-  Actions总是`Action<T, U>` 或 `CocoaAction`（它是 `Action<Void, Void>`的别名） 类型：
+  Actions总是`Action<T, U>` 或 `CocoaAction`（它是 `Action<Void, Void>`的别名） 类型：你真的没有选择，不要把任何不是来自`Action`模块的东西放在那里。
 
 The `MyViewModelType` protocol simply enforces the need for the same three variables to be created every time, which basically are your API to the ViewModel.
 
+ `MyViewModelType` 协议强制需要每次创建相同的三个变量，这些变量基本上是就你ViewModel的API。
+
 These variables are implemented as computed and return `self` which is why down at the bottom the ViewModel needs to conform to their protocol specs. They are all the way down just to visually de-clutter the code.
+
+这些变量用计算属性实现并返回 `self` ，这就是为什么在底部的ViewModel需要符合他们的协议规范。 他们放在最下来，只是为了避免代码的视觉混乱。
 
 Now that the ViewModel skeleton is in place, let’s get to the meat:
 
-1. **Everything happens in the **`**init**`**: **nothing gets initialized outside of it, all bindings are set up
-2. **There always is a service for your ViewModel:** it represents the “building blocks” helper `struct` that it can consume/assemble from to produce outputs *[see *[*Services done right*](https://medium.com/smoke-swift-every-day/rxswift-services-done-right-dd1646c0ecd2)*]*
-3. **There (almost) always is a reference to the app **`**coordinator**`**: **when the ViewModel is bound to by a controller. You do not need a reference to it when it is bound to by a view, such as a `UICollectionViewCell`
-4. **There is nothing more than actions from the **`**Action**`** module below init: **every “func” you imagine to produce output observables either sits in the service `struct` as a helper or can and should be abstracted as an action
+现在，ViewModel的骨架已经到位了，我们来看看肉：
+
+1. **Everything happens in the `init`**: nothing gets initialized outside of it, all bindings are set up
+
+   一切都发生在`init`中：没有任何东西在它之外初始化，所有绑定都被设置
+
+2. **There always is a service for your ViewModel:** it represents the “building blocks” helper `struct` that it can consume/assemble from to produce outputs *[see [Services done right](https://medium.com/smoke-swift-every-day/rxswift-services-done-right-dd1646c0ecd2)]*
+
+   您的ViewModel总是有一个service：它代表了可以消耗/组合从而产生输出“构建块”的辅助 `struct` [参见[Services done right](https://medium.com/smoke-swift-every-day/rxswift-services-done-right-dd1646c0ecd2)]
+
+3. **There (almost) always is a reference to the app `coordinator`**: when the ViewModel is bound to by a controller. You do not need a reference to it when it is bound to by a view, such as a `UICollectionViewCell`
+
+   那里（几乎）总有对应用程序协调器的引用：当ViewModel被控制器绑定时。 当绑定到一个视图时，例如UICollectionViewCell，您不需要引用它。
+
+4. **There is nothing more than actions from the `Action` module below init**: every “func” you imagine to produce output observables either sits in the service `struct` as a helper or can and should be abstracted as an action
+
+   除了init之下的Action模块之外没有更多的actions，你设想用来产生输出的observables，或者位于service  `struct` 作为一个helper，或者可以并且应该被抽象为一个动作。
 
 #### **Real life example**
 
