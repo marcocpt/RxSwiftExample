@@ -12,7 +12,7 @@ RxSwift_V1.0笔记——4: Observables and Subjects in Practice
 
 ## RxPagination
 
-Action	 APIKit	 TableView
+Action APIKit TableView
 
 TODO
 
@@ -28,6 +28,25 @@ TODO
 ## RxSwiftCitySearch
 
 [RxSwift学习之旅 - 城市搜索](http://www.alonemonkey.com/2017/04/05/rxswift-part-twelve/)
+
+## RxSwiftoniOS
+
+### 1.Search GitHub with RxSwift
+
+ TableView Network
+### 2.Presenting View Controllers with RxSwift
+
+ ViewController Navigate
+
+### 3.  Unidirectional data flow with RxSwift and RxRealm
+
+ RxRealm, RxRealmDataSources,  JSON, Network, Timer, SerialDispatchQueueScheduler, DispatchQueue, arc4random_uniform, observeOn
+
+### 4.  combineLatest beyond the basics
+
+ combineLatest, Networ, JSON
+
+​    
 
 ## RxSwiftMoya
 

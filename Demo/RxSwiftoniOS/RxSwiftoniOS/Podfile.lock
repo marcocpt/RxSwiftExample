@@ -1,0 +1,39 @@
+PODS:
+  - Realm (2.9.1):
+    - Realm/Headers (= 2.9.1)
+  - Realm/Headers (2.9.1)
+  - RealmSwift (2.9.1):
+    - Realm (= 2.9.1)
+  - RxCocoa (3.6.1):
+    - RxSwift (~> 3.6)
+  - RxRealm (0.6.0):
+    - RealmSwift (~> 2.5)
+    - RxSwift (~> 3.2)
+  - RxRealmDataSources (0.2.2):
+    - RealmSwift (~> 2.1)
+    - RxCocoa (~> 3.1)
+    - RxRealm (~> 0.5)
+    - RxSwift (~> 3.1)
+  - RxSwift (3.6.1)
+  - Unbox (2.5.0)
+
+DEPENDENCIES:
+  - RealmSwift (~> 2.7)
+  - RxCocoa (~> 3.1)
+  - RxRealm (~> 0.6)
+  - RxRealmDataSources (~> 0.2)
+  - RxSwift (~> 3.1)
+  - Unbox (~> 2.3)
+
+SPEC CHECKSUMS:
+  Realm: f91fb43bd474c4f731a116ebf7392c75dd015920
+  RealmSwift: 207f12a4a36b696c5183c60a1c06d70234a23e56
+  RxCocoa: 84a08739ab186248c7f31ce4ee92d6f8a947d690
+  RxRealm: 323de579b50b5e0f4a3e087d5925021f976ffaf1
+  RxRealmDataSources: a5fb0bbd4e5938ba8a776dfb7510150fd981c7a0
+  RxSwift: f9de85ea20cd2f7716ee5409fc13523dc638e4e4
+  Unbox: 30e437e6151a6de16139375fd4e8dd9a664cfbf7
+
+PODFILE CHECKSUM: c2a093c11be37b0ecd1afbdd52fc014b95427ed7
+
+COCOAPODS: 1.2.1
