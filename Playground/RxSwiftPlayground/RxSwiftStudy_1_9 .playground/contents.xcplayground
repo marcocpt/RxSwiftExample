@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<playground version='6.0' target-platform='ios' display-mode='rendered' executeOnSourceChanges='false'>
+    <pages>
+        <page name='Table_of_Contents'/>
+        <page name='Chapter_2_Observables'/>
+        <page name='Chapter_3_Subjects'/>
+        <page name='Chapter_3_Challenges'/>
+        <page name='Chapter_5_Filtering_Operators'/>
+        <page name='7'/>
+        <page name='7c'/>
+        <page name='9'/>
+        <page name='9c'/>
+        <page name='11'/>
+        <page name='11c'/>
+        <page name='template'/>
+    </pages>
+</playground>

@@ -10,14 +10,16 @@ import RxSwift
 import RxCocoa
 
 struct RegisterViewModel {
+  //Output
   let validatedUsername: Driver<ValidationResult>
   let validatedPassword: Driver<ValidationResult>
   let validatedPasswordRepeated: Driver<ValidationResult>
-  
+
   let registerEnabled: Driver<Bool>
   let registered: Driver<Bool>
   let registering: Driver<Bool>
   
+  //Input
   let registerTap = Variable<Void>()
   
   init(input:(username: Driver<String>, password: Driver<String>,
