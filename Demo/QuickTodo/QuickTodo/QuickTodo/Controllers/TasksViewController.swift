@@ -46,8 +46,8 @@ class TasksViewController: UIViewController, BindableType {
   
   func bindViewModel() {
     viewModel.sectionedItems
-      .bindTo(tableView.rx.items(dataSource: dataSource))
-      .addDisposableTo(self.rx_disposeBag)
+      .bind(to: tableView.rx.items(dataSource: dataSource))
+      .disposed(by: self.rx_disposeBag)
 
     newTaskButton.rx.action = viewModel.onCreateTask()
 
@@ -56,7 +56,7 @@ class TasksViewController: UIViewController, BindableType {
         try! self.dataSource.model(at: indexPath) as! TaskItem
       }
       .subscribe(viewModel.editAction.inputs)
-      .addDisposableTo(rx_disposeBag)
+      .disposed(by: rx_disposeBag)
   }
 
   fileprivate func configureDataSource() {

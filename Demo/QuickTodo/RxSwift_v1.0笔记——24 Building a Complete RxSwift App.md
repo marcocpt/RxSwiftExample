@@ -1,10 +1,10 @@
 ## RxSwift_v1.0笔记——24 Building a Complete RxSwift App
 
-通过本书，你学习到了RxSwift的许多方面。响应式编程是一个很深的主题；<u>它的采用在多数情况下会与你已经成熟使用的构建有很大差异</u>。<u>在RxSwift中你构建事件和数据流的方式对正确的行为来说是重要的，它也保证了产品未来的发展</u>。
+通过本书，你学习到了RxSwift的许多方面。响应式编程是一个很深的主题；它的采用在多数情况下会与你已经成熟使用的构建有很大差异。在RxSwift中你构建事件和数据流的方式对正确的行为来说是重要的，它也保证了产品未来的发展。
 
 你将构建一个小的RxSwift应用来结束本书。这个目标不是“不惜任何代价”使用Rx，而是使设计决策引导一个具有稳定，可预测和模块化行为的干净的架构。这个应用设计比较简单，清晰的呈现了你能够用来构建你自己的应用的思想。
 
-本章是关于RxSwift的，也是适合你需要的一个好的构架。RxSwift是一个伟大的<u>工具</u>，它帮助你的应用运行起来像一个精心调校（well-tuned）的引擎，但它对于思考和设计应用程序架构<u>来说</u>不是多余的。
+本章是关于RxSwift的，也是适合你需要的一个好的构架。RxSwift是一个伟大的工具，它帮助你的应用运行起来像一个精心调校（well-tuned）的引擎，但它对于思考和设计应用程序架构来说不是多余的。
 
 ### Introducing QuickTodo 376
 
@@ -20,22 +20,20 @@
 
 首先，让我们介绍一些你将实现的构建的一些术语：
 
-- **Scene**：指由视图控制器管理的屏幕。它可以是常规屏幕，或<u>模态对话框（modal dialog）</u>。它由一个视图控制器和一个视图模型组成。
+- **Scene**：指由视图控制器管理的屏幕。它可以是常规屏幕，或模态对话框（modal dialog）。它由一个视图控制器和一个视图模型组成。
 - **View model**：定义业务逻辑和数据给视图控制器使用，来呈现一个特定的场景。
 - **Service**：一个功能性的逻辑组提供给在应用中的任何场景。例如，数据库存储能够被抽象为一个服务。同样的，网络API请求能够被分组到网络服务。
 - **Model**：存储在应用中大部分的基础数据。视图模型和服务都操作和交换模型。
 
 在上一章“MVVM with RxSwift”中你学习了视图模型。Services是一个新的概念并且也适合与响应式编程。他们的目的是竟可能的使用Observable和Observer暴露数据和功能，以便创建一个全局模型，其中的组件竟可能以响应方式的连接在一起。
 
-对于你的QuickTodo应用，需求相当适用。正确构建，将为你未来的发展奠定坚实的基础。它也是一个你可以重用<u>于</u>其他app的构架。
+对于你的QuickTodo应用，需求相当适用。正确构建，将为你未来的发展奠定坚实的基础。它也是一个你可以重用于其他app的构架。
 
 你需要了解的基础项：
 
-<<<<<<< HEAD
-- 一个TaskItem **model**，它表示一个<u>独立</u>任务。
-=======
-- 一个TaskItem **model**，它表示一个<u>独立的</u>任务。
->>>>>>> origin/master
+- 一个TaskItem **model**，它表示一个独立任务。
+
+
 - 一个TaskService **service**，它提供了任务创建、更新、删除、存储和搜索。
 - 一个**storage medium**；你将使用一个Realm数据库和RxRealm。
 - 一个系列的创建和搜索任务的**scenes**列表。每个scene分离到一个**视图模型**和一个**视图控制器**。
@@ -46,19 +44,11 @@
 正如你上章所学的，视图模型暴露了业务逻辑和数据模型给视图控制器。接下来你将为每个视图模型创建简单的规则：
 
 - 暴露数据作为observable序列。这保证了一旦连接到用户界面就自动更新。
-<<<<<<< HEAD
-- 使用 <u>Action</u>样式将暴露的所有视图模型的动作连接到UI。
+- 使用 Action样式将暴露的所有视图模型的动作连接到UI。
 - 任何可公开访问的模型或数据，不会作为observable序列暴露，且都是不可变的。
 - 从一个场景转换到另个场景是业务逻辑的一部分。每个视图模型初始化这个转换并准备下一个场景的视图模型，而不需要指定关于视图模型的任何事。
 
-<u>从当前的视图控制器完全隔离视图模型，包含触发到其他场景的转换的解决方案，本章稍后将会介绍。</u>
-=======
-- 使用动作样式将暴露的所有视图模型的动作连接到UI。
-- <u>任何模型或数据可公开访问</u>，不会作为observable序列暴露，且都是不可变的。
-- 从一个场景转换到另个场景是业务逻辑的一部分。每个视图模型初始化这个转换并准备下一个场景的视图模型，而不需要<u>知道</u>关于视图模型的任何事。
-
-<u>本章稍后将会介绍</u>完全从实际的视图控制器隔离视图模型的一个解决方案，包含触发到其他场景的转换。
->>>>>>> origin/master
+从当前的视图控制器完全隔离视图模型，包含触发到其他场景的转换的解决方案，本章稍后将会介绍。
 
 ```
 Note：数据的不变性保证了对由UI触发的更新的完全控制。严格遵循以上规则也保证了每个代码块最好的可测试性。
@@ -105,7 +95,7 @@ extension BindableType where Self: UIViewController {
 
 ### Task model 379
 
-你的任务模型是简单的且来源于Realm的基本对象。任务定义为有一个标题（任务内容），一个创建日期和一个检查日期。日期被用来在任务列表中对任务排序。如果你<u>不熟悉</u>Realm，请查看他们的文档：https://realm.io/docs/swift/latest/。
+你的任务模型是简单的且来源于Realm的基本对象。任务定义为有一个标题（任务内容），一个创建日期和一个检查日期。日期被用来在任务列表中对任务排序。如果你不熟悉Realm，请查看他们的文档：https://realm.io/docs/swift/latest/。
 
 填充TaskItem.swift如下：
 
@@ -131,7 +121,7 @@ class TaskItem: Object {
 
 ### Tasks service 380
 
-Tasks service的责任是创建、更新和抓取来至<u>存储的</u>任务项。作为一个<u>可靠</u>的开发者，你将使用协议来定义你的服务公共接口，然后写一个运行时的实现并为测试模拟实现。
+Tasks service的责任是创建、更新和抓取来至存储的任务项。作为一个可靠的开发者，你将使用协议来定义你的服务公共接口，然后写一个运行时的实现并为测试模拟实现。
 
 首先，创建协议。这是你将暴露给用户的服务。
 
@@ -186,11 +176,11 @@ struct TaskService: TaskServiceType {
 
 你通过以上了解到，在本章的架构中，场景是由视图控制器和视图模型管理的“屏幕”构成的逻辑展示单元。场景的规则有：
 
-- 视图模型处理<u>业务逻辑</u>。<u>这包括开始转换到另一个“场景”</u>
-- <u>视图</u>模型对于实际的视图控制器和用于表示场景的视图一无所知。
-- 视图控制器不应该<u>发起到另一个场景的转换；这是运行在视图模型中的业务逻辑的责任</u>。
+- 视图模型处理业务逻辑。这包括开始转换到另一个“场景”
+- 视图模型对于实际的视图控制器和用于表示场景的视图一无所知。
+- 视图控制器不应该发起到另一个场景的转换；这是运行在视图模型中的业务逻辑的责任。
 
-<u>考虑到这一点，你可以制定(lay down)一个模型，应用场景作为case列在Scene枚举中，每种case都有将场景视图模型作为其相关数据</u>。
+考虑到这一点，你可以制定(lay down)一个模型，应用场景作为case列在Scene枚举中，每种case都有将场景视图模型作为其相关数据。
 
 ```
 Note：这与你在上一章中导航类中所做的很相似，但是使用Scene，导航会变得更加灵活。
@@ -359,13 +349,13 @@ RxDataSource提供了以下特性：
 - 可配置的动画，用于删除，插入和更新。
 - 支持section和item动画。
 
-在您的情况下，采用RxDataSources将提供自动动画，而无需任何工作。 目标是将任务列表末尾的检查项目移动到“已检查”部分。
+在此情况下，采用RxDataSources将提供自动动画，而无需任何工作。我们的目标是将检查项目移动到任务列表末尾的“已检查”部分。
 
-RxDataSources的不足之处在于它比基本的RxCocoa绑定更难理解。 您可以传递一个部分模型数组，而不是将一组项目传递给表或集合视图。 部分模型定义了部分标题（如果有的话）以及每个项目的数据模型。
+RxDataSources的不足之处在于它比基本的RxCocoa绑定更难理解。 您可以传递一个section model数组，而不是将一组items传递给表或集合视图。 section model定义了部分标题（如果有的话）以及每个项目的数据模型。
 
 ![](http://upload-images.jianshu.io/upload_images/2224431-799d1f42c1d801fd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/440)
 
-开始使用RxDataSources的最简单方法是使用SectionModel或AnimatableSectionModel的通用类型作为您的section的类型。 因为你想要动画的项目，你可以使用 AnimatableSectionModel.。 您可以通过简单地指定section信息和项目数组的类型来使用通用类。
+开始使用RxDataSources的最简单方法是使用SectionModel或AnimatableSectionModel的通用类型作为您的section的类型。 因为你想要动画的项目，你可以使用 AnimatableSectionModel.。 您可以使用使用泛型类来简单地指定section的类型信息和items数组。
 
 打开TasksViewModel.swift并将其添加到顶部：
 
@@ -375,7 +365,7 @@ typealias TaskSection = AnimatableSectionModel<String, TaskItem>
 
 这将您的section类型定义为具有String类型的section模型（您只需要一个标题），并将section内容定义为TaskItem元素的数组。
 
-RxDataSources的唯一约束是，section中使用的每个类型都必须符合IdentifiableType和Equatable协议。 IdentifiableType声明一个唯一的标识符（在同一具体类型的对象中是唯一的），以便RxDataSources唯一标识对象。 Equatable允许它比较对象来检测相同唯一对象的两个副本之间的变化。
+使用RxDataSources的唯一限制是，section中使用的每个类型都必须符合IdentifiableType和Equatable协议。 IdentifiableType声明一个唯一的标识符（在同一具体类型的对象中是唯一的），以便RxDataSources唯一标识对象。 Equatable允许它比较对象来检测相同唯一对象的两个副本之间的变化。
 
 Realm对象已经符合Equatable协议（参见下面的注意事项）。 现在，您只需要将TaskItem声明为符合IdentifiableType。 打开TaskItem.swift并添加以下扩展名：
 
@@ -390,10 +380,10 @@ extension TaskItem: IdentifiableType {
 该代码通过Realm数据库检查对象的有效性。 删除任务时会发生这种情况; 任何以前从数据库中查询的活动副本都将无效。
 
 ```
-Note：在您的情况下，更改检测有点挑战性，因为Realm对象是类类型，而不是值类型。 对数据库的任何更新立即反映在对象属性中，这使得RxDataSources的比较变得困难。 事实上，Realm的Equatable协议的实现很快，因为它只检查两个对象是否引用相同的存储对象。 有关此特定问题的解决方案，请参阅下面的“任务单元”部分。
+Note：在您的情况下，更改检测有点难度，因为Realm对象是类类型，而不是值类型。 对数据库的任何更新立即反映在对象属性中，这使得RxDataSources的比较变得困难。 事实上，Realm的Equatable协议的实现很快，因为它只检查两个对象是否引用相同的存储对象。 有关此特定问题的解决方案，请参阅下面的“任务单元”部分。
 ```
 
-现在，您需要将您的任务列表公开为observable。 您将使用TaskService的任务observable，感谢RxRealm，在任务列表中发生更改时会自动发出。 您的目标是分离任务列表，如下所示：
+现在，您需要将您的任务列表暴露为observable。 您将使用TaskService的任务observable，感谢RxRealm，在任务列表中发生更改时会自动发出。 您的目标是分离任务列表，如下所示：
 
 - Due（未选中）任务，先按最后添加排序
 - Done（已检查）任务，按检查数据排序（最后检查）
@@ -486,7 +476,7 @@ configureDataSource()
 ```swift
 viewModel.sectionedItems
   .bindTo(tableView.rx.items(dataSource: dataSource))
-  .addDisposableTo(self.rx_disposeBag)
+  .disposed(by: self.rx_disposeBag)
 ```
 
 你完成了第一个控制器！ 您可以对dataSource对象中的每个更改类型使用不同的动画。 现在将它们保留为默认值。
@@ -497,13 +487,13 @@ viewModel.sectionedItems
 
 ### Binding the Task cell 391
 
-您将把这个技术应用到**TaskTableViewCell**。 打开类文件并添加一些内容到 configure(with:action:)方法：
+您将把这个技术应用到**TaskTableViewCell**。 打开类文件并添加以下内容到 configure(with:action:)方法：
 
 ```swift
 button.rx.action = action
 ```
 
-您首先将“toggle checkmark”操作绑定到复选标记按钮。 有关Action模式的更多详细信息，请参阅第19章“操作”。
+您首先将“toggle checkmark”操作绑定到复选标记按钮。 有关Action模式的更多详细信息，请参阅第19章“Action”。
 
 现在绑定标题字符串和“已检查”状态图像：
 
@@ -512,14 +502,14 @@ item.rx.observe(String.self, "title")
   .subscribe(onNext: { [weak self] title in
     self?.title.text = title
   })
-  .addDisposableTo(disposeBag)
+  .disposed(by: disposeBag)
 item.rx.observe(Date.self, "checked")
   .subscribe(onNext: { [weak self] date in
     let image = UIImage(named: (date == nil) ? "ItemNotChecked" :
       "ItemChecked")
     self?.button.setImage(image, for: .normal)
   })
-  .addDisposableTo(disposeBag)
+  .disposed(by: disposeBag)
 ```
 
 在这里，您可以相应地单独观察这两个属性并更新单元格内容。由于您在订阅时立即收到初始值，您可以确信单元格始终是最新的。
@@ -542,11 +532,11 @@ override func prepareForReuse() {
 
 解决的另一个问题是创建和修改任务。 您要在创建或编辑任务时呈现模态视图控制器，并且操作（如更新或删除）应传回任务列表视图模型。 虽然在这种情况下不是绝对必要的，因为本地可以处理更改，任务列表将自动更新，感谢Realm，重要的是您学习了将信息传递回一系列场景的模式。
 
-实现此目的的主要方法是使用可信的Action模式。 这是计划：
+实现此目的的主要方法是使用可信的Action模式。 这是它的计划：
 
 - 准备编辑场景时，在初始化传递一个或多个动作。
 - 编辑场景执行其工作，并在退出时执行相应的操作（更新或取消）。
-- 呼叫者可以通过不同的动作取决于它的上下文，编辑场景将不会知道差异。 在创建时通过“删除”操作以取消删除操作（或无操作）。
+- 呼叫者可以通过不同的动作取决于它的上下文，编辑场景将不会知道差异。 在创建时通过“删除”动作以取消删除操作（或无操作）。
 
 当您将其应用于您自己的应用程序时，您会发现这种模式非常灵活。 在呈现模态场景时，特别有用，也可以传达要通过合成结果集的多个场景的结果。
 
@@ -575,13 +565,13 @@ func onCreateTask() -> CocoaAction {
 Note：由于self是一个结构体，所以action得到了自己的“copy”结构体（由Swift优化为一个引用），没有循环引用 ——没有内存泄漏的风险！ 这就是为什么你在这里看不到[weak self]或[unowned self]，它不适用于值类型。
 ```
 
-这是您将绑定到任务列表场景右上角的“+”按钮的操作。 这是它的作用：
+这是您将绑定到任务列表场景右上角的“+”按钮的操作。 下面是它的作用：
 
 - 创建一个新的新任务项目。
-- 如果创建成功，请实例化一个新的EditTaskViewModel，并与updateAction一起传递，updateAction更新新任务项目的标题以及一个删除任务项目的cancelAction。 由于刚刚创建，所以取消应在逻辑上删除任务。
+- 如果创建成功，实例化一个新的EditTaskViewModel，并与updateAction一起传递，updateAction更新新任务项目的标题以及一个删除任务项目的cancelAction。 由于刚刚创建，所以取消应在逻辑上删除任务。
 
 ```
-Note：由于Action返回可观察的序列，因此您可以将整个创建编辑过程整合到单个序列中，一旦编辑任务场景关闭，该过程就会完成。 由于一个Action保持锁定状态，直到执行observable完成，所以不可能增加编辑器两被的时间（it is not possible to inadvertently raise the editor twice at the same time.）。 酷！
+Note：由于Action返回可观察的序列，因此您可以将整个创建编辑过程整合到单个序列中，一旦编辑任务场景关闭，该过程就会完成。 由于一个Action保持锁定状态，直到执行observable完成，所以不可能同时在不经意间增加编辑器两被的时间。 酷！
 ```
 
 现在将操作绑定到TasksViewController的bindViewModel()函数上的“+”按钮：
@@ -590,7 +580,7 @@ Note：由于Action返回可观察的序列，因此您可以将整个创建编�
 newTaskButton.rx.action = viewModel.onCreateTask()
 ```
 
-接下来，移动到EditTaskViewModel.swift并填充初始化程序。 将此代码添加到 init(task:coordinator:updateAction:cancelAction:)：
+接下来，转到EditTaskViewModel.swift并填充初始化程序。 将此代码添加到 init(task:coordinator:updateAction:cancelAction:)：
 
 ```swift
 onUpdate.executionObservables
@@ -598,14 +588,14 @@ onUpdate.executionObservables
   .subscribe(onNext: { _ in
     coordinator.pop()
   })
-  .addDisposableTo(disposeBag)
+  .disposed(by: disposeBag)
 ```
 
 ```
 Note：为了允许大部分代码进行编译，onUpdate和onCancel属性被定义为强制解包的可选值。 您现在可以删除感叹号。
 ```
 
-上面做了什么？ 除了将onUpdate操作设置为传递给初始化程序的操作之外，它还会在动作执行时预订动作的执行Observables序列，该序列发出新的可观察值。 由于该操作将被绑定到OK按钮，您只能看到它执行一次。 当这种情况发生时，您pop()当前场景，并且场景协调器将关闭它。
+上面做了什么？ 除了将onUpdate操作设置为传递给初始化程序的操作之外，它还会在动作执行时订阅动作的执行Observables序列，该序列发出新的可观察值。 由于该操作将被绑定到OK按钮，您只能看到它执行一次。 当这种情况发生时，您pop()当前场景，并且场景协调器将关闭它。
 
 对于“取消”按钮，您需要进行不同的操作。 删除现有的onCancel = cancelAction分配; 你会做一些更聪明的事情。
 
@@ -627,7 +617,7 @@ cancelButton.rx.action = viewModel.onCancel
 okButton.rx.tap
   .withLatestFrom(titleView.rx.text.orEmpty)
   .subscribe(viewModel.onUpdate.inputs)
-  .addDisposableTo(rx_disposeBag)
+  .disposed(by: rx_disposeBag)
 ```
 
 当用户点击OK按钮时，您需要处理关于UI的所有操作是将文本视图内容传递给onUpdate操作。 您正在利用Action的输入观察者，它可以直接管理值以执行该操作。
@@ -653,7 +643,7 @@ lazy var editAction: Action<TaskItem, Void> = { this in
 ```
 
 ```
-注意：由于self是一个结构体，因此不能创建weak或unowned引用。 相反，将self传递给初始化懒惰变量的闭包或函数。
+注意：由于self是一个结构体，因此不能创建weak或unowned引用。 替代地，将self传递给初始化懒惰变量的闭包或函数。
 ```
 
 现在，在TaskViewController.swift中，您可以在TaskViewController的bindViewModel()中绑定此操作。 加：
@@ -664,7 +654,7 @@ tableView.rx.itemSelected
     try! self.dataSource.model(at: indexPath) as! TaskItem
   }
   .subscribe(viewModel.editAction.inputs)
-  .addDisposableTo(rx_disposeBag)
+  .disposed(by: rx_disposeBag)
 ```
 
 您正在使用dataSource对获取的模型对象与接收到的IndexPath匹配，然后将其导入操作的输入。 简单！

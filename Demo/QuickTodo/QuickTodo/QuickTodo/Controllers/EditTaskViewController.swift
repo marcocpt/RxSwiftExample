@@ -42,7 +42,7 @@ class EditTaskViewController: UIViewController, BindableType {
     okButton.rx.tap
       .withLatestFrom(titleView.rx.text.orEmpty)
       .subscribe(viewModel.onUpdate.inputs)
-      .addDisposableTo(rx_disposeBag)
+      .disposed(by: rx_disposeBag)
   }
 
   override func viewDidAppear(_ animated: Bool) {

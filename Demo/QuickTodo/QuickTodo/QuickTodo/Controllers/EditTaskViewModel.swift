@@ -28,7 +28,7 @@ struct EditTaskViewModel {
 
   let itemTitle: String
   let onUpdate: Action<String, Void>
-  let onCancel: CocoaAction!
+  let onCancel: CocoaAction
   let disposeBag = DisposeBag()
 
   init(task: TaskItem, coordinator: SceneCoordinatorType, updateAction: Action<String, Void>, cancelAction: CocoaAction? = nil) {
@@ -46,6 +46,6 @@ struct EditTaskViewModel {
       .subscribe(onNext: { _ in
         coordinator.pop()
       })
-      .addDisposableTo(disposeBag)
+      .disposed(by: disposeBag)
   }
 }
