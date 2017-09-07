@@ -49,7 +49,7 @@ class ViewController : UIViewController {
 
     textField.rx.text.orEmpty
       .bind(to: viewModel.hexString)
-      .addDisposableTo(disposeBag)
+      .disposed(by: disposeBag)
 
     for button in buttons {
       button.rx.tap
@@ -76,7 +76,7 @@ class ViewController : UIViewController {
             textField.sendActions(for: .valueChanged)
           }
         }
-        .addDisposableTo(self.disposeBag)
+        .disposed(by: self.disposeBag)
     }
 
     viewModel.color
@@ -85,16 +85,16 @@ class ViewController : UIViewController {
           self.view.backgroundColor = color
         }
       })
-      .addDisposableTo(disposeBag)
+      .disposed(by: disposeBag)
 
     viewModel.rgb
       .map { "\($0.0), \($0.1), \($0.2)" }
       .drive(rgbTextField.rx.text)
-      .addDisposableTo(disposeBag)
+      .disposed(by: disposeBag)
 
     viewModel.colorName
       .drive(colorNameTextField.rx.text)
-      .addDisposableTo(disposeBag)
+      .disposed(by: disposeBag)
   }
 
   func configureUI() {

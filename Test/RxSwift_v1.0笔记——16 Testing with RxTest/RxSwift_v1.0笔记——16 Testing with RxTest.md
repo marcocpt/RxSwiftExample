@@ -341,7 +341,7 @@ override func viewDidLoad() {
 
   textField.rx.text.orEmpty
     .bindTo(viewModel.hexString)
-    .addDisposableTo(disposeBag)
+    .disposed(by: disposeBag)
 
   for button in buttons {
     button.rx.tap
@@ -368,7 +368,7 @@ override func viewDidLoad() {
           textField.sendActions(for: .valueChanged)
         }
       }
-      .addDisposableTo(self.disposeBag)
+      .disposed(by: self.disposeBag)
   }
 
   viewModel.color
@@ -377,16 +377,16 @@ override func viewDidLoad() {
         self.view.backgroundColor = color
       }
     })
-    .addDisposableTo(disposeBag)
+    .disposed(by: disposeBag)
 
   viewModel.rgb
     .map { "\($0.0), \($0.1), \($0.2)" }
     .drive(rgbTextField.rx.text)
-    .addDisposableTo(disposeBag)
+    .disposed(by: disposeBag)
 
   viewModel.colorName
     .drive(colorNameTextField.rx.text)
-    .addDisposableTo(disposeBag)
+    .disposed(by: disposeBag)
 }
 ```
 
@@ -442,7 +442,7 @@ viewModel.color.asObservable()
     result = $0
     expect.fulfill()
   })
-  .addDisposableTo(disposeBag)
+  .disposed(by: disposeBag)
 // 3
 viewModel.hexString.value = "#ff0000"
 // 4
@@ -515,7 +515,7 @@ func testRgbIs010WhenHexStringIs00FF00() {
 
 还有一个要测试的驱动程序 将此测试添加到TestingViewModel，来测试视图模型的colorName驱动为给定的hexString输入发出正确的元素：
 
-```
+```Swift
 func testColorNameIsRayWenderlichGreenWhenHexStringIs006636() {
   // 1
   let colorNameObservable =
