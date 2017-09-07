@@ -119,11 +119,12 @@ override func tearDown() {
 }
 ```
 
- tearDown()在每个测试完成是调用。在它里面，在1000毫秒后你调度测试订阅的销毁。你写的每个测试将运行至少1秒，因此在1秒后销毁测试的订阅是安全的。
+ tearDown()在每个测试完成时调用。在它里面，在1000毫秒后你调度测试订阅的销毁。你写的每个测试将运行至少1秒，因此在1秒后销毁测试的订阅是安全的。
 
 现在朋友，是时候写测试了。在 tearDown()的定义后面增加一个新的test到TestingOperators：
 
 ```swift
+//1
 func testAmb() {
 
   //2
@@ -131,14 +132,15 @@ func testAmb() {
 }
 ```
 
-你做了一下内容：
+你做了以下内容：
 
-1. 想所有使用XCTest的tests一样，方法名必须以test开头。你建立了一个名叫amb的测试。
+1. 像所有使用XCTest的tests一样，方法名必须以test开头。你建立了一个名叫amb的测试。
 2. 你使用scheduler的 createObserver(_:)方法与String类型的示意创建了一个观察者
 
 观察者将记录它接收到的每个事件的时间戳，就像在RxSwift中的debug操作，但不会打印任何输出。在Combining Operators章节你已经学习了amb操作。amb被用在两个observables之间，哪个observable首先发射，它就只传播它发射的事件。你需要创建两个observables。增加下面代码到test：
 
 ```swift
+//1
 let observableA = scheduler.createHotObservable([
   // 2
   next(100, "a)"),
@@ -157,7 +159,7 @@ let observableB = scheduler.createHotObservable([
 这个代码做了：
 
 1. 使用 scheduler的createHotObservable(_:)创建一个observableA。
-2. 用第二个参数传递的值在指定的时间，使用 next(_:_:)方法增加 .next事件到 observableA上next(_:_:)
+2. 使用next(_:_:)方法在指定的时间（毫秒）添加.next事件到observableA上 ，第二个参数作为值传递。
 3. 创建 名为observableB的热observable
 4. 用规定的值在指定的时间增加 .next事件到 observableB
 
@@ -297,13 +299,13 @@ func testToArray() {
 }
 ```
 
-它了的如下：
+它做了的如下：
 
 1. 使用默认的服务质量，创建并发scheduler来运行异步测试
 2. 创建observable来保持在scheduler上，订阅到两个字符串的observable的结果。
 3. 对toArrayObservable调用toBlocking（）的结果使用toArray，并断言toArray的返回值等于预期结果。
 
- toBlocking()转换 toArrayObservable为一个阻塞observable，阻止由scheduler产生的线程，直到它终止。运行测试你应该看到成功。仅用三行代码就测试了一个异步操作——哇！你将用简洁的RxBlocking做更多工作，但现在是时候离开测试操作并写一些测试针对（against）应用的产品代码。
+ toBlocking()转换 toArrayObservable为一个阻塞observable，阻止由scheduler产生的线程，直到它终止。运行测试你应该看到成功。仅用三行代码就测试了一个异步操作——哇！你将用简洁的RxBlocking做更多工作，但现在是时候离开操作的测试并写一些针对（against）应用产品代码的测试。
 
 ### 测试RxSwift的产品代码 307
 

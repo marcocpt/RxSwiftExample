@@ -1,0 +1,12 @@
+target 'UsingRxBlocking' do
+  use_frameworks!
+  
+  pod 'RxSwift'
+  pod 'RxCocoa'
+  
+  target 'UsingRxBlockingTests' do
+    inherit! :search_paths
+    pod 'RxTest'
+    pod 'RxBlocking'
+  end
+end
