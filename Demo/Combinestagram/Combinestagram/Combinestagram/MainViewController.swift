@@ -88,9 +88,16 @@ class MainViewController: UIViewController {
   }
 
   func showMessage(_ title: String, description: String? = nil) {
-    let alert = UIAlertController(title: title, message: description, preferredStyle: .alert)
-    alert.addAction(UIAlertAction(title: "Close", style: .default, handler: { [weak self] _ in self?.dismiss(animated: true, completion: nil)}))
-    present(alert, animated: true, completion: nil)
+//    let alert = UIAlertController(title: title, message: description, preferredStyle: .alert)
+//    alert.addAction(UIAlertAction(title: "Close", style: .default, handler: { [weak self] _ in self?.dismiss(animated: true, completion: nil)}))
+//    present(alert, animated: true, completion: nil)
+		//Rx方式
+		alert(title: title, text: description)
+			.subscribe(onNext: { [weak self] in
+				self?.dismiss(animated: true, completion: nil)
+			})
+			.addDisposableTo(bag)
+			
   }
   
   private func updateUI(photos: [UIImage]) {
@@ -99,4 +106,19 @@ class MainViewController: UIViewController {
     itemAdd.isEnabled = photos.count < 6
     title = photos.count > 0 ? "\(photos.count) photos" : "Collage"
   }
+}
+
+extension UIViewController {
+	func alert(title: String, text: String?) -> Observable<Void> {
+		return Observable.create({ [weak self] observer -> Disposable in
+			let alertVC = UIAlertController(title: title, message: text, preferredStyle: .alert)
+			alertVC.addAction(UIAlertAction(title: "Close", style: .default, handler: { (_) in
+				observer.onCompleted()
+			}))
+			self?.present(alertVC, animated: true, completion: nil)
+			return Disposables.create {
+				self?.dismiss(animated: true, completion: nil)
+			}
+		})
+	}
 }

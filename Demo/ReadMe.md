@@ -1,10 +1,12 @@
-## CustomRxDelegate
-
-[RxDelegate](http://t.swift.gg/d/41-022-rxdelegate)
-
 ## Combinestagram
 
 RxSwift_V1.0笔记——4: Observables and Subjects in Practice
+
+Observables, Variable
+
+## CustomRxDelegate
+
+[RxDelegate](http://t.swift.gg/d/41-022-rxdelegate)
 
 ## QuickTodo
 
@@ -12,7 +14,7 @@ RxSwift_V1.0笔记——4: Observables and Subjects in Practice
 
 ## RxPagination
 
-Action APIKit TableView
+Action, APIKit, TableView
 
 TODO
 
