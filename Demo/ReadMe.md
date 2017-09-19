@@ -1,12 +1,16 @@
 ## Combinestagram
 
-RxSwift_V1.0笔记——4: Observables and Subjects in Practice
+RxSwift_V1.0笔记——4: Observables and Subjects in Practice + 6: Filtering Operators in Practice
 
-Observables, Variable
+Observables, Variable, throttle, takeWhile, filter, ignoreElements, alert
 
 ## CustomRxDelegate
 
 [RxDelegate](http://t.swift.gg/d/41-022-rxdelegate)
+
+## GitFeed
+
+RxSwift_V1.0笔记——2
 
 ## QuickTodo
 
