@@ -32,11 +32,13 @@ class MainViewController: UIViewController {
 
   private let bag = DisposeBag()
   private let images = Variable<[UIImage]>([])
+  private var imageCache = [Int]()
   
   override func viewDidLoad() {
     super.viewDidLoad()
     
     images.asObservable()
+      .throttle(0.5, scheduler: MainScheduler.instance)
       .subscribe(onNext: { [weak self] photos in
         guard let preview = self?.imagePreview else { return }
         preview.image = UIImage.collage(images: photos, size: preview.frame.size)
@@ -57,6 +59,7 @@ class MainViewController: UIViewController {
 
   @IBAction func actionClear() {
     images.value = []
+    imageCache = []
   }
 
   @IBAction func actionSave() {
@@ -81,6 +84,20 @@ class MainViewController: UIViewController {
       .share()
       
     newPhotos
+      .takeWhile { [weak self] image in
+        return (self?.images.value.count ?? 0) < 6
+      }
+      .filter { newImage in
+        return newImage.size.width > newImage.size.height
+      }
+      .filter { [weak self] newImage in
+        let len = UIImagePNGRepresentation(newImage)?.count ?? 0
+        guard self?.imageCache.contains(len) == false else {
+          return false
+        }
+        self?.imageCache.append(len)
+        return true
+      }
       .subscribe(onNext: { [weak self] newImage in
         guard let images = self?.images else { return }
         images.value.append(newImage)
