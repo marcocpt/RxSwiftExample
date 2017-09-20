@@ -12,7 +12,7 @@ Observables, Variable, throttle, takeWhile, filter, ignoreElements, alert
 
 RxSwift_V1.0笔记——8: Transforming Operators in Practice
 
-map, flatMap, shareReplay, json, plist, never
+map, flatMap, shareReplay, json, plist, never, DispatchQueue
 
 ## QuickTodo
 

@@ -60,7 +60,10 @@ class ActivityController: UITableViewController {
   }
 
   func refresh() {
-    fetchEvents(repo: repo)
+		DispatchQueue.global(qos: .background).async { [weak self] in
+			guard let strongSelf = self else { return }
+			strongSelf.fetchEvents(repo: strongSelf.repo)
+		}
   }
 
   func fetchEvents(repo: String) {
@@ -77,12 +80,14 @@ class ActivityController: UITableViewController {
 				return request
 			}
       .flatMap { request -> Observable<(HTTPURLResponse, Data)> in
+				print("main: \(Thread.isMainThread)")
         return URLSession.shared.rx.response(request: request)
       }
       .shareReplay(1)
     
     response
       .filter { response, _ in
+				print("main: \(Thread.isMainThread)")
         return 200..<300 ~= response.statusCode
       }
       .map { _, data -> [[String: Any]] in
@@ -129,8 +134,12 @@ class ActivityController: UITableViewController {
 			updatedEvents = Array<Event>(updatedEvents.prefix(upTo: 50))
 		}
 		events.value = updatedEvents
-		tableView.reloadData()
-		refreshControl?.endRefreshing()
+
+		DispatchQueue.main.async { [weak self] in
+			print("main: \(Thread.isMainThread)")
+			self?.tableView.reloadData()
+			self?.refreshControl?.endRefreshing()
+		}
 
 		let eventsArray = updatedEvents.map{ $0.dictionary } as NSArray
 		eventsArray.write(to: eventsFileURL, atomically: true)
