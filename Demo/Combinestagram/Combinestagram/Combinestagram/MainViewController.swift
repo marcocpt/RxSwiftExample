@@ -37,15 +37,18 @@ class MainViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    images.asObservable()
+    let imagesShare = images.asObservable()
       .throttle(0.5, scheduler: MainScheduler.instance)
+      .share()
+    
+    imagesShare
       .subscribe(onNext: { [weak self] photos in
         guard let preview = self?.imagePreview else { return }
         preview.image = UIImage.collage(images: photos, size: preview.frame.size)
       })
       .addDisposableTo(bag)
     
-    images.asObservable()
+    imagesShare
       .subscribe(onNext: { [weak self] photos in
         self?.updateUI(photos: photos)
       })
