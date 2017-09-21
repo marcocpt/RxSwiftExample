@@ -14,6 +14,12 @@ RxSwift_V1.0笔记——8: Transforming Operators in Practice
 
 map, flatMap, shareReplay, json, plist, never, DispatchQueue
 
+## OurPlanet
+
+RxSwift_V1.0笔记——10: Combining Operators in Practice
+
+ startWith,  concat,  merge,  reduce, scan, Equatable, DateFormatter, CustomStringConvertible
+
 ## QuickTodo
 
 [RxSwift_v1.0笔记——24 Building a Complete RxSwift App](http://www.jianshu.com/p/451b93c70b40)
