@@ -67,7 +67,23 @@ class ActivityController: UITableViewController {
   }
 
   func fetchEvents(repo: String) {
-    let response = Observable.from([repo])
+    //challenge 2
+//    let response = Observable.from([repo])
+    let response = Observable.from(["https://api.github.com/search/repositories?q=language:swift&per_page=5"])
+      .map { (urlString) -> URLRequest in
+        let url = URL(string: urlString)!
+        return URLRequest(url: url)
+      }
+      .flatMap { (request) -> Observable<Any> in
+        return  URLSession.shared.rx.json(request: request)
+      }
+      .flatMap { (response) -> Observable<String> in
+        guard let response = response as? [String: Any],
+          let items = response["items"] as? [[String: Any]] else {
+          return Observable.never()
+        }
+         return Observable.from(items.map { $0["full_name"] as! String })
+      }
       .map { (urlString) -> URL in
         return URL(string: "https://api.github.com/repos/\(urlString)/events")!
       }
