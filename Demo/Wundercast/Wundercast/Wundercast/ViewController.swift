@@ -31,6 +31,7 @@ class ViewController: UIViewController {
   @IBOutlet weak var humidityLabel: UILabel!
   @IBOutlet weak var iconLabel: UILabel!
   @IBOutlet weak var cityNameLabel: UILabel!
+  @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
   
   let bag = DisposeBag()
 
@@ -39,20 +40,45 @@ class ViewController: UIViewController {
     // Do any additional setup after loading the view, typically from a nib.
 
     style()
-
-  }
-
-  override func viewDidAppear(_ animated: Bool) {
-    super.viewDidAppear(animated)
-
-    let search =
-      searchCityName.rx.controlEvent(.editingDidEndOnExit).asObservable()
+    
+    let searchInput =
+      searchCityName.rx.controlEvent(.editingDidEndOnExit)
+        .asObservable()
         .map { self.searchCityName.text }
-        .flatMap { text in
-          return ApiController.shared.currentWeather(city: text ?? "Error")
-        }
-        .asDriver(onErrorJustReturn: ApiController.Weather.empty)
-
+        .filter { ($0 ?? "").characters.count > 0 }
+    
+    let search = searchInput.flatMap { (text) in
+      return ApiController.shared.currentWeather(city: text ?? "Error")
+        .catchErrorJustReturn(ApiController.Weather.dummy)
+      }
+      .asDriver(onErrorJustReturn: ApiController.Weather.dummy)
+    
+    let running = Observable.from([
+      searchInput.map { _ in true },
+      search.map { _ in false }.asObservable()
+      ])
+      .merge()
+      .startWith(true)
+      .asDriver(onErrorJustReturn: false)
+    
+    running
+      .skip(1)
+      .drive(activityIndicator.rx.isAnimating)
+      .disposed(by: bag)
+    
+    running
+      .drive(tempLabel.rx.isHidden)
+      .disposed(by: bag)
+    running
+      .drive(iconLabel.rx.isHidden)
+      .disposed(by: bag)
+    running
+      .drive(humidityLabel.rx.isHidden)
+      .disposed(by: bag)
+    running
+      .drive(cityNameLabel.rx.isHidden)
+      .disposed(by: bag)
+    
     search.map { "\($0.temperature)° C" }
       .drive(tempLabel.rx.text)
       .disposed(by: bag)
@@ -68,6 +94,12 @@ class ViewController: UIViewController {
     search.map { $0.cityName }
       .drive(cityNameLabel.rx.text)
       .disposed(by: bag)
+  }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+
+    
   }
 
   override func viewDidLayoutSubviews() {

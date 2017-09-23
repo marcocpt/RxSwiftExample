@@ -98,7 +98,7 @@ TODO
 
 ## Wundercast
 
-RxSwift_v1.0笔记——12 Beginning RxCocoa
+RxSwift_v1.0笔记——12 Beginning RxCocoa + 13: Intermediate RxCocoa
 
 preferredStatusBarStyle, Logging, viewDidLayoutSubviews, URLRequest, flatMapLatest,
 

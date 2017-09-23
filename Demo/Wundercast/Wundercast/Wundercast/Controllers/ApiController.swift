@@ -32,12 +32,25 @@ class ApiController {
     let temperature: Int
     let humidity: Int
     let icon: String
+    let lat: Double
+    let lon: Double
 
     static let empty = Weather(
       cityName: "Unknown",
       temperature: -1000,
       humidity: 0,
-      icon: iconNameToChar(icon: "e")
+      icon: iconNameToChar(icon: "e"),
+      lat: 0,
+      lon: 0
+    )
+    
+    static let dummy = Weather(
+      cityName: "RxCity",
+      temperature: 20,
+      humidity: 90,
+      icon: iconNameToChar(icon: "01d"),
+      lat: 0,
+      lon: 0
     )
   }
 
@@ -68,8 +81,23 @@ class ApiController {
           temperature: json["main"]["temp"].int ?? -1000,
           humidity: json["main"]["humidity"].int ?? 0,
           icon: iconNameToChar(icon: json["weather"][0]["icon"].string ??
-            "e")
+            "e"),
+          lat: json["coord"]["lat"].double ?? 0,
+          lon: json["coord"]["lon"].double ?? 0
         )
+    }
+  }
+  
+  func currentWeather(lat: Double, lon: Double) -> Observable<Weather> {
+    return buildRequest(pathComponent: "weather", params: [("lat", "\(lat)"), ("lon", "\(lon)")]).map() { json in
+      return Weather(
+        cityName: json["name"].string ?? "Unknown",
+        temperature: json["main"]["temp"].int ?? -1000,
+        humidity: json["main"]["humidity"].int  ?? 0,
+        icon: iconNameToChar(icon: json["weather"][0]["icon"].string ?? "e"),
+        lat: json["coord"]["lat"].double ?? 0,
+        lon: json["coord"]["lon"].double ?? 0
+      )
     }
   }
 
