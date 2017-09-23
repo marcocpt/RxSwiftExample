@@ -31,6 +31,8 @@ class ViewController: UIViewController {
   @IBOutlet weak var humidityLabel: UILabel!
   @IBOutlet weak var iconLabel: UILabel!
   @IBOutlet weak var cityNameLabel: UILabel!
+  
+  let bag = DisposeBag()
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -42,6 +44,30 @@ class ViewController: UIViewController {
 
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
+
+    let search =
+      searchCityName.rx.controlEvent(.editingDidEndOnExit).asObservable()
+        .map { self.searchCityName.text }
+        .flatMap { text in
+          return ApiController.shared.currentWeather(city: text ?? "Error")
+        }
+        .asDriver(onErrorJustReturn: ApiController.Weather.empty)
+
+    search.map { "\($0.temperature)° C" }
+      .drive(tempLabel.rx.text)
+      .disposed(by: bag)
+    
+    search.map { $0.icon }
+      .drive(iconLabel.rx.text)
+      .disposed(by: bag)
+    
+    search.map { "\($0.humidity)%" }
+      .drive(humidityLabel.rx.text)
+      .disposed(by: bag)
+    
+    search.map { $0.cityName }
+      .drive(cityNameLabel.rx.text)
+      .disposed(by: bag)
   }
 
   override func viewDidLayoutSubviews() {

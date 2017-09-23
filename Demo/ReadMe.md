@@ -100,4 +100,6 @@ TODO
 
 RxSwift_v1.0笔记——12 Beginning RxCocoa
 
-preferredStatusBarStyle, Logging
+preferredStatusBarStyle, Logging, viewDidLayoutSubviews, URLRequest, flatMapLatest,
+
+drive, controlEvent
