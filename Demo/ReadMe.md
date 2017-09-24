@@ -102,4 +102,6 @@ RxSwift_v1.0笔记——12 Beginning RxCocoa + 13: Intermediate RxCocoa
 
 preferredStatusBarStyle, Logging, viewDidLayoutSubviews, URLRequest, flatMapLatest,
 
-drive, controlEvent
+drive, controlEvent, CLLocationManager, CoreLocation, MapKit, DelegateProxy,
+
+CLLocationCoordinate2D, MKOverlayRenderer, UIBindingObserver
