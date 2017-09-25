@@ -163,6 +163,15 @@ class ViewController: UIViewController {
     search.map { [$0.overlay()] }
       .drive(mapView.rx.overlays)
       .disposed(by: bag)
+
+    mapInput.flatMap { coordinate in
+      return ApiController.shared.currentWeatherAround(lat: coordinate.latitude, lon: coordinate.longitude)
+      	.catchErrorJustReturn([])
+    	}
+    	.asDriver(onErrorJustReturn: [])
+      .map { $0.map { $0.overlay() } }
+    	.drive(mapView.rx.overlays)
+    	.disposed(by: bag)
   }
 
   override func viewDidAppear(_ animated: Bool) {
