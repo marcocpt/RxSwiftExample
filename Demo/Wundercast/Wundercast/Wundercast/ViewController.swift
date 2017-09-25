@@ -73,7 +73,7 @@ class ViewController: UIViewController {
       }
       .filter { location in
         return location.horizontalAccuracy < kCLLocationAccuracyHundredMeters
-    }
+      }
     
     let geoInput = geoLocationButton.rx.tap.asObservable()
       .do(onNext: {
@@ -93,6 +93,13 @@ class ViewController: UIViewController {
     let search = Observable.from([geoSearch, textSearch, mapSearch])
       .merge()
       .asDriver(onErrorJustReturn: ApiController.Weather.dummy)
+    
+    Observable.from([geoSearch, textSearch])
+      .merge()
+      .asDriver(onErrorJustReturn: ApiController.Weather.dummy)
+      .map { $0.coordinate }
+      .drive(mapView.rx.location)
+      .disposed(by: bag)
     
     let running = Observable.from([
       searchInput.map { _ in true },
@@ -160,8 +167,6 @@ class ViewController: UIViewController {
 
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-
-    
   }
 
   override func viewDidLayoutSubviews() {
