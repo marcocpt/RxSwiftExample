@@ -34,7 +34,7 @@ Note:创建自定义的schedulers超出了本书的范围。RxSwift，RxCocoa提
 
 pod install 后运行app，debugger控制台应该输出如下：
 
-```
+```swift
 ===== Schedulers =====
 00s | [D] [dog] received on Main Thread
 00s | [S] [dog] received on Main Thread
@@ -43,7 +43,7 @@ Program ended with exit code: 0
 
 开始前，打开Utils.swift并看看 dump() and  dumpingSubscription()的实现。
 
-第一个方法使用[D]前缀在do(onNext :)操作内倾倒元素和当前线程的信息。第二个方法使用[S]前缀做了同样的事情，除了调用 subscribe(onNext:)外。两个方法标识了消耗的时间，因此00s代表（stand for）“0秒消耗”。
+第一个方法使用[D]前缀在do(onNext :)操作内颠倒元素和当前线程的信息。第二个方法使用[S]前缀做了同样的事情，除了调用 subscribe(onNext:)外。两个方法标识了消耗的时间，因此00s代表（stand for）“0秒消耗”。
 
 你有两种不同的方式将打印信息的副作用注入到控制台，因此你可以用 do(onNext:)链接他们，并通过用 subscribe(onNext:)订阅链接来终止链接。在下节中你将看到在schedulers之间为observablesd的链式结构切换是多么容易。
 
@@ -59,7 +59,7 @@ Note：这种限制类型的一个例子是，如果observable发出非线程安
 
 增加以下代码到main.swift：
 
-```
+```swift
 let fruit = Observable<String>.create { observer in
   observer.onNext("[apple]")
   sleep(2)
@@ -204,7 +204,7 @@ Program ended with exit code: 0
 
 #### 陷阱 291
 
-切换scheduler和线程的能力看起来很炫酷，但它也带来了一些陷阱。来看看为什么，你你将使用一个新的线程来推送事件到目标。因此你需要追踪在哪个线程上进行计算，好的解决方案是使用Thred（不是Objective-C的NSThread）。
+切换scheduler和线程的能力看起来很炫酷，但它也带来了一些陷阱。来看看为什么，你将使用一个新的线程来推送事件到目标。因此你需要追踪在哪个线程上进行计算，好的解决方案是使用Thred（不是Objective-C的NSThread）。
 
 在fruit observable之后，增加下面代码用来产生动物：
 

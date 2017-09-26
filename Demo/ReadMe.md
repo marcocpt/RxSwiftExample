@@ -4,6 +4,14 @@ RxSwift_V1.0笔记——14：error handling in practice
 
 catchError, retry, retryWhen， flatMapWithIndex
 
+## 15-intro-to-schedulers
+
+RxSwift_v1.0笔记——15 Intro To Schedulers
+
+ConcurrentDispatchQueueScheduler, subscribeOn, RunLoop, Thread, observeOn
+
+
+
 ## Combinestagram
 
 RxSwift_V1.0笔记——4: Observables and Subjects in Practice + 6: Filtering Operators in Practice
