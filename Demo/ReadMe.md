@@ -1,6 +1,8 @@
 ## 14-error-handling-in-practice
 
+RxSwift_V1.0笔记——14：error handling in practice
 
+catchError, retry, retryWhen， flatMapWithIndex
 
 ## Combinestagram
 
@@ -100,7 +102,7 @@ TODO
 
 [RxSwift学习之旅 - 双向绑定](http://www.alonemonkey.com/2017/04/01/rxswift-part-ten/)
 
-## Wundercast
+## Wundercast *
 
 RxSwift_v1.0笔记——12 Beginning RxCocoa + 13: Intermediate RxCocoa
 
