@@ -51,8 +51,13 @@ class ViewController: UIViewController {
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
     let maxAttempts = 4
+    
     style()
-
+    
+    if RxReachability.shared.startMonitor("apple.com") == false {
+      print("Reachability failed!")
+    }
+    
     keyButton.rx.tap.subscribe(onNext: {
       self.requestKey()
     }).addDisposableTo(bag)
@@ -89,6 +94,8 @@ class ViewController: UIViewController {
           return ApiController.shared.apiKey
             .filter {$0 != ""}
             .map { _ in return 1 }
+        } else if (error as NSError).code == -1009 {
+          return RxReachability.shared.status.filter { $0 == .online }.map { _  in return 1 }
         }
         print("== retrying after \(attempt + 1) seconds ==")
         return Observable<Int>.timer(Double(attempt + 1), scheduler: MainScheduler.instance)
