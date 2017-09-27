@@ -8,9 +8,11 @@ catchError, retry, retryWhen， flatMapWithIndex
 
 RxSwift_v1.0笔记——15 Intro To Schedulers
 
-ConcurrentDispatchQueueScheduler, subscribeOn, RunLoop, Thread, observeOn
+ConcurrentDispatchQueueScheduler, subscribeOn, RunLoop, Thread, observeOn, MainScheduler,
 
+SerialDispatchQueueScheduler,  ConcurrentDispatchQueueScheduler, OperationQueueScheduler,
 
+TestScheduler
 
 ## Combinestagram
 

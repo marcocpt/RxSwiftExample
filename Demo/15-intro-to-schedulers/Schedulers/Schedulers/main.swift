@@ -30,7 +30,9 @@ let bag = DisposeBag()
 let animal = BehaviorSubject(value: "[dog]")
 
 animal
+  .subscribeOn(MainScheduler.instance)
   .dump()
+  .observeOn(globalScheduler)
   .dumpingSubscription()
   .disposed(by: bag)
 
