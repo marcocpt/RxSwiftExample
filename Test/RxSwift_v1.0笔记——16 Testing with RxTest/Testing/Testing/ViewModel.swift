@@ -34,6 +34,7 @@ class ViewModel {
   let colorName: Driver<String>
 
   init() {
+    // Convert hex text to color
     color = hexString.asObservable()
       .map { hex in
         guard hex.characters.count == 7 else { return .clear }
@@ -42,6 +43,7 @@ class ViewModel {
       }
       .asDriver(onErrorJustReturn: .clear)
 
+    // Convert the color to an rgb tuple
     rgb = color.asObservable()
       .map { color in
         var red: CGFloat = 0.0
@@ -54,6 +56,7 @@ class ViewModel {
       }
       .asDriver(onErrorJustReturn: (0, 0, 0))
 
+    // Convert the hex text to a matching name
     colorName = hexString.asObservable()
       .map { hexString in
         let hex = String(hexString.characters.dropFirst())

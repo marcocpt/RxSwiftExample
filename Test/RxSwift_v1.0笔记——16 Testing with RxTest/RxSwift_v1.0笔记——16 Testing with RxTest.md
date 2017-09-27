@@ -19,9 +19,10 @@
 
 ![](http://upload-images.jianshu.io/upload_images/2224431-52d3297b42b34ee5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/400)
 
-这个APP是使用MVVM设计模式组织起来的，你可以在MVVM章节学习MVVM的相关知识。简单来说就是逻辑代码被封住在视图模型中，视图控制器用来控制视图。除了枚举流行的颜色名称之外，整个应用程序都运行在这个逻辑上，您将在本章稍后部分中写出测试：
+这个APP是使用MVVM设计模式组织起来的，你可以在MVVM章节学习MVVM的相关知识。简单来说就是逻辑代码被封装在视图模型中，视图控制器用来控制视图。除了枚举流行的颜色名称之外，整个应用程序都运行在这个逻辑上，您将在本章稍后部分中写出测试：
 
 ```swift
+// Convert hex text to color
 color = hexString.asObservable()
   .map { hex in
     guard hex.characters.count == 7 else { return .clear }
@@ -30,6 +31,7 @@ color = hexString.asObservable()
   }
   .asDriver(onErrorJustReturn: .clear)
 
+// Convert the color to an rgb tuple
 rgb = color.asObservable()
   .map { color in
     var red: CGFloat = 0.0
@@ -42,6 +44,7 @@ rgb = color.asObservable()
   }
   .asDriver(onErrorJustReturn: (0, 0, 0))
 
+// Convert the hex text to a matching name
 colorName = hexString.asObservable()
   .map { hexString in
     let hex = String(hexString.characters.dropFirst())
@@ -64,7 +67,7 @@ Note：这个章节是假设你很熟悉在iOS系统中用XCTest编写单元测�
 ### 用RxTest测试操作 301
 
 ```
-Note：因为Swift包管理的问题，RxTest已经重命名为“RxTests”。因此如果你在野外（out in the wild）看到了“RxTests”，它很可能是指RxTest。
+Note：因为Swift包管理的问题，原“RxTests”已经重命名为RxTest。因此如果你在野外（out in the wild）看到了“RxTests”，它很可能是指RxTest。
 ```
 
 RxTest是RxSwift的独立库。 它在RxSwift repo内托管(host)，但需要单独的pod安装和导入。 RxTest为测试RxSwift代码提供了许多有用的补充，例如TestScheduler，它是一个虚拟时间scheduler，可以精确控制测试时间线性操作，包括 next(_:_:)， completed(_:_:)，和 error(_:_:)，可以在测试中的指定时间将这些事件添加到observables。 它还添加了冷和热observables，你可以把它想象成冷热三明治。不，不是真的。
