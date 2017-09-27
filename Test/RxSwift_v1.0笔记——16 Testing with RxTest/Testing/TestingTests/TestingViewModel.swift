@@ -23,6 +23,8 @@
 import XCTest
 import RxSwift
 import RxTest
+// ‼️‼️‼️使用Xcode9需要导入RxCocoa，否则报错！
+import RxCocoa
 @testable import Testing
 
 class TestingViewModel : XCTestCase {

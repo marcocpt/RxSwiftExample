@@ -208,7 +208,7 @@ let results = observer.events.map {
 }
 ```
 
-在观察者的事件属性上你使用map访问每个事件的元素。现在你能断言这些实际的结果通关增加下面代码来匹配你期望的结果
+在观察者的事件属性上你使用map访问每个事件的元素。现在你能断言这些实际的结果通过增加下面代码来匹配你期望的结果
 
 ```swift
 XCTAssertEqual(results, ["1)", "2)", "3)"])
@@ -428,7 +428,7 @@ func testColorIsRedWhenHexStringIsFF0000_async() {
 }
 ```
 
-你做了一下工作：
+你做了以下工作：
 
 1. 创建一个稍后实现的预期。
 2. 创建 expectedColor等于红色的预期的测试结果。
