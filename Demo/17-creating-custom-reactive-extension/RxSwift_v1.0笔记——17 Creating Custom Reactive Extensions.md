@@ -33,20 +33,26 @@ extension Reactive where Base: URLSession {
 }
 ```
 
-#### How to create wrapper methods 315
+响应式扩展通过非常清晰的协议扩展，在URLSession上暴露.rx命名空间。这是用RxSwift扩展URLSession的第一步。现在是时候创建实际的封装了。
 
-你希望为下列类型数据创建封装：
+#### 如何创建封装的方法 315
+
+您已经在NSURLSession上暴露了.rx命名空间，因此现在可以创建一些封装的函数来返回要公开的数据类型的Observable。
+
+APIs能够返回多种类型的数据，正确的做法是检查你app需要的数据类型。你希望为下列类型数据创建封装：
 
 - Data：仅仅是数据
 - String：数据作为文本
 - JSON：JSON对象的一个实例
 - Image：图像的一个实例
 
-你的目标是给一个 Observable<Data>，它将被用来创建剩下的三个操作：
+这些封装将确保你期望的类型被投递。否则将发送错误，且app将输出错误而不会崩溃。
+
+这个，和一个将被用来创建所有其他的东西的封装，是一个返回HTTPURLResponse和结果数据的封装。你的目标是给一个 Observable<Data>，它将被用来创建剩下的三个操作：
 
 ![](http://upload-images.jianshu.io/upload_images/2224431-88a66da950cac692.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/620)
 
-在你刚刚创建的扩展内部增加：
+首先创建主要响应函数的框架，这样你就知道要返回的内容了。在你刚刚创建的扩展内部增加：
 
 ```swift
 func response(request: URLRequest) -> Observable<(HTTPURLResponse, Data)>
@@ -58,7 +64,11 @@ func response(request: URLRequest) -> Observable<(HTTPURLResponse, Data)>
 }
 ```
 
-在Observable.create内部增加：
+现在很清楚扩展应该返回什么了。URLResponse是需要你检查的部分，当数据到达时，用来确保处理成功，当然，实际的数据用它返回。
+
+URLSession是基于回调和任务的。例如内建方法 dataTask(with:completionHandler:) 会发送一个请求并接收来至服务器的响应。这个函数使用回调来管理结果，因此你的observable的逻辑必须在请求闭包内部被管理。
+
+为了实现以上内容，在Observable.create内部增加：
 
 ```swift
 let task = self.base.dataTask(with: request) { (data, response, error) in
@@ -66,15 +76,21 @@ let task = self.base.dataTask(with: request) { (data, response, error) in
 task.resume()
 ```
 
-The created task must to be resumed (or started)，so the resume() function will trigger the request.
+创建的任务必须被恢复（或启动），因此resume()函数将发出请求，然后通过回调来适当地处理结果。
 
-It’s better to cancel the request so that you don’t waste any resources. return Disposables.create() with:
+```
+Note：使用resume()函数是所谓的“命令式编程”。 稍后你会看到这些意味着什么。
+```
+
+现在这个任务已经就位了，在继续之前需要做一个改变。 在上一个块中，您返回了一个Disposable.create()，如果Observable被销毁，这将什么都不做。 最好取消请求，以免浪费任何资源。
+
+为了实现以上内容，用以下内容替换return Disposables.create()：
 
 ```swift
 return Disposables.create(with: task.cancel)
 ```
 
-it’s time to make sure the data is correctly returned before sending any event to this instance.To achieve this, add the following to **your task closure** just above task.resume():
+现在，您已经拥有了具有正确生命周期策略的Observable，现在是时候确保在给这个实例发送任何事件前，数据是正确的了。 要实现这一点，请将以下内容添加到task.resume()上方的task闭包中：
 
 ```swift
 guard let response = response, let data = data else {
@@ -88,14 +104,18 @@ guard let httpResponse = response as? HTTPURLResponse else {
 }
 ```
 
-After ensuring the request has been correctly completed, this observable needs some data. Add the following code immediately after the code you added above:
+两个guard申明在通知所有订阅前，确保了请求已经成功执行。
+
+保证请求正确完成后，这个observable需要一些数据。在你刚增加的代码下面增加以下代码：
 
 ```swift
 observer.on(.next(httpResponse, data))
 observer.on(.completed)
 ```
 
-you can reuse this method to build the rest of the convenient methods. Start by adding the one returning a Data instance:
+这将事件发送到所有订阅，然后立即完成。 触发请求并接收其响应是单次Observable的用法。 保持可观察的活动并执行其他请求是没有意义的，这更适合于socket通信等。
+
+这是封装URLSession的最基本的操作。 您将需要包装更多的东西，以确保应用程序正在处理正确的数据类型。 好消息是，您可以重用此方法来构建其他便利方法。 首先添加一个返回Data实例的：
 
 ```swift
 func data(request: URLRequest) -> Observable<Data> {
@@ -110,9 +130,9 @@ func data(request: URLRequest) -> Observable<Data> {
 }
 ```
 
-The Data observable is the root of all the others. Data can be converted to a String, JSON object or UIImage.
+Data observable是所有其他的根基。Data能够装换为String，JSON对象或UIImage。
 
-Add the following to return a String:
+增加下面方法来返回String：
 
 ```swift
 func string(request: URLRequest) -> Observable<String> {
@@ -122,7 +142,7 @@ func string(request: URLRequest) -> Observable<String> {
 }
 ```
 
-A JSON data structure is a simple structure to work with, so a dedicated conversion is more than welcomed. Add:
+JSON数据结构是一个简单的结构，所以专用的转换是受欢迎的。 增加：
 
 ```swift
 func json(request: URLRequest) -> Observable<JSON> {
@@ -132,7 +152,7 @@ func json(request: URLRequest) -> Observable<JSON> {
 }
 ```
 
-Finally, implement the last one to return an instance of UIImage:
+最后，实现最后一个用来返回UIImage实例的方法：
 
 ```swift
 func image(request: URLRequest) -> Observable<UIImage> {

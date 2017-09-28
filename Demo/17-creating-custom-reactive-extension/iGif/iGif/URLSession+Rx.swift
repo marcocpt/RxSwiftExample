@@ -36,9 +36,49 @@ extension Reactive where Base: URLSession {
   {
     return Observable.create { observer in
       let task = self.base.dataTask(with: request) { (data, response, error) in
+        guard let response = response, let data = data else {
+          observer.on(.error(error ?? RxURLSessionError.unknown))
+          return
+        }
+        guard let httpResponse = response as? HTTPURLResponse else {
+          observer.on(.error(RxURLSessionError.invalidResponse(response:
+            response)))
+          return
+        }
+
+        observer.on(.next(httpResponse, data))
+        observer.on(.completed)
       }
       task.resume()
-      return Disposables.create()
+      return Disposables.create(with: task.cancel)
+    }
+  }
+
+  func data(request: URLRequest) -> Observable<Data> {
+    return response(request: request).map { (response, data) -> Data in
+      if 200 ..< 300 ~= response.statusCode {
+        return data
+      } else {
+        throw RxURLSessionError.requestFailed(response: response, data: data)
+      }
+    }
+  }
+
+  func string(request: URLRequest) -> Observable<String> {
+    return data(request: request).map { d in
+      return String(data: d, encoding: .utf8) ?? ""
+    }
+  }
+
+  func json(request: URLRequest) -> Observable<JSON> {
+    return data(request: request).map { d in
+      return JSON(data: d)
+    }
+  }
+
+  func image(request: URLRequest) -> Observable<UIImage> {
+    return data(request: request).map { d in
+      return UIImage(data: d) ?? UIImage()
     }
   }
 }
