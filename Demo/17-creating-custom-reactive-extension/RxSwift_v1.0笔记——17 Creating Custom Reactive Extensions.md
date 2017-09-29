@@ -379,20 +379,19 @@ func testError() {
 
 RxSwift社区非常活跃，有许多扩展和封装已经可用。一些事基于Apple的组件，一些是基于在许多iOS和macOS项目上使用广泛的第三方库。
 
-你可以在下面网站找的最新的（up-to-date）封装列表：
+你可以在下面网站找的最新的（up-to-date）封装列表：http://community.rxswift.org
 
 #### RxDataSources 324
 
- RxDataSources is a  **UITableView and  UICollectionView data source** for RxSwift with some really nice features such as:
+RxDataSources是一个用于RxSwift的UITableView和UICollectionView数据源，具有一些非常好的功能，如：
 
-- O(N) algorithm for calculating differences
-- Heuristics to send the minimal number of commands to sectioned view
-- Support for extending already implemented views
-- Support for hierarchical animations
+- 用于计算差异的O(N)算法
+- 启发式发送最少数量的命令到sectioned视图
+- 支持扩展已实施的视图
+- 支持层次动画
 
-my favorite is the **O(N) algorithm** to differentiate two data sources – it **ensures** the application **isn’t performing unnecessary calculations** when managing table views.
-
-Consider the code you write with the built-in RxCocoa table binding:
+这些都是重要的功能，但我最喜欢的是用于区分两个数据源的O(N)算法 - 它确保了在管理表视图时应用程序不执行不必要的计算。
+考虑使用内置的RxCocoa表绑定编写的代码：
 
 ```swift
 let data = Observable<[String]>.just(
@@ -405,9 +404,9 @@ data.bindTo(tableView.rx.items(cellIdentifier: "Cell")) { index, model,
 .addDisposableTo(disposeBag)
 ```
 
-This works perfectly with **simple data sets, but lacks animations, support for multiple sections, and doesn’t extend very well.**
+这个用简单的数据设置完美工作，但是缺少动画和对多个sections的支持，并且不能很好地扩展。
 
-**With RxDataSource** correctly configured, the code becomes **more robust**:
+通过RxDataSource正确配置，代码变得更加健壮：
 
 ```swift
 //configure sectioned data source
@@ -421,12 +420,12 @@ Observable.just(
 .addDisposableTo(disposeBag)
 ```
 
-And the **minimal configuration of the data source** that needs to be done in advance looks like so:
+并且需要预先完成的数据源的最小配置如下所示：
 
 ```swift
 dataSource.configureCell = { dataSource, tableView, indexPath, item in
   let cell = tableView.dequeueReusableCell(
-  withIdentifier: "Cell", for: indexPath)
+  	withIdentifier: "Cell", for: indexPath)
   cell.placeLabel.text = item
   return cell
 }
@@ -435,54 +434,55 @@ dataSource.titleForHeaderInSection = { dataSource, index in
 }
 ```
 
-Since **binding table and collection views** is an important every day task, you'll look into RxDataSources in **more detail in a dedicated cookbook-style chapter later in this book**.
+由于绑定table和collection视图是重要的每日任务，您将在本书后面的专用章节cookbook-style中更详细地查看RxDataSources。
 
 #### RxAlamofire 325
 
-RxAlamofire is a wrapper around the elegant Swift **HTTP networking library** Alamofire.
-
- RxAlamofire features the following **convenience extensions**:
+RxAlamofire是优雅的Swift HTTP网络库Alamofire的封装。 Alamofire是最受欢迎的第三方框架之一。
+RxAlamofire具有以下便利扩展功能：
 
 ```swift
 func data(_ method:_ url:parameters:encoding:headers:)
   -> Observable<Data>
 ```
 
-This method **combines all the request** details into one call and **returns** the server response as **Observable<Data>**.
+此方法将所有请求详细信息合并到一个调用中，并将服务器响应作为Observable <Data>返回。
 
-Further, the library offers:
+而且，这个库还提供了：
 
 ```swift
 func string(_ method:_ url:parameters:encoding:headers:)
   -> Observable<String>
 ```
 
-This one **returns** an **Observable** of the content response as **String**.
+它返回一个String类型的Observable的内容响应
 
-Last, but no less important:
+最后，但同样重要：
 
 ```swift
 func json(_ method:_ url:parameters:encoding:headers:)
   -> Observable<Any>
 ```
 
-It’s important to know that this method **doesn’t return a JSON object** like the one you created before.
+它返回一个对象的实例。 重要的是要知道，此方法不会返回像之前创建的JSON对象
 
 #### RxBluetoothKit 326
 
-RxBluetoothKit abstracts some of the most painful parts of working with Bluetooth and delivers some cool features:
+使用蓝牙可能很复杂。 一些调用是异步的，调用的顺序对于从设备或外围设备正确连接，发送数据和接收数据至关重要。
 
-- CBCentralManger support
-- CBPeripheral support
-- Scan sharing and queueing
+RxBluetoothKit抽象了一些使用蓝牙的最痛苦的部分，并提供了一些很酷的功能：
 
-To start using RxBluetoothKit, you have to create a manager:
+- CBCentralManger 支持
+- CBPeripheral 支持
+- 扫描共享和排队
+
+开始使用RxBluetoothKit，你必须创建一个manager：
 
 ```swift
 let manager = BluetoothManager(queue: .main)
 ```
 
-The code to scan for peripherals looks something along the lines of:
+扫描外设的代码看起来像：
 
 ```swift
 manager.scanForPeripherals(withServices: [serviceIds])
@@ -491,7 +491,7 @@ manager.scanForPeripherals(withServices: [serviceIds])
 }
 ```
 
-And to connect to one:
+并连接到一个：
 
 ```swift
 manager.scanForPeripherals(withServices: [serviceId])
@@ -502,7 +502,7 @@ manager.scanForPeripherals(withServices: [serviceId])
   })
 ```
 
-It’s also possible to observe the current state of the manager:
+也可以观察当前manager的现状：
 
 ```swift
 manager.rx_state
@@ -512,7 +512,7 @@ manager.rx_state
   .flatMap { manager.scanForPeripherals(withServices: [serviceId]) }
 ```
 
-In addition to the manager, there are also super-convenient abstractions for characteristics and peripherals. For example, to connect to a peripheral you can do the following:
+除了manager外，还有特色和外设的超级方便抽象。 例如，要连接外设，您可以执行以下操作：
 
 ```swift
 peripheral.connect()
@@ -522,7 +522,7 @@ peripheral.connect()
   })
 ```
 
-And if you want to discover a characteristic:
+如果你想发现一个特征:
 
 ```swift
 peripheral.connect()
@@ -533,12 +533,14 @@ peripheral.connect()
   })
 ```
 
-RxBluetoothKit also features functions to properly perform connection restorations, to monitor the state of Bluetooth and to monitor the connection state of single peripheral.
+RxBluetoothKit还具有正确执行连接恢复功能，监控蓝牙状态和监视单个外设连接状态的功能。
 
-### Where to go from here? 327
+### 何去何从? 327
 
-There’s no real written rule about when an abstraction is necessary, but the recommendation is to apply this strategy if the framework meets one or more of these conditions:
+在本章中，您将了解如何实现和封装Apple框架。 有时，抽象官方Apple 框架或第三方库是非常有用的，它可以更好地与RxSwift连接。当抽象是必要的时候，没有真正的书面规则，但是如果框架满足以下一个或多个条件，建议应用这一策略：
 
-- Uses callbacks with completion and failure information
-- Uses a lot of delegates to return information asynchronously
-- The framework needs to inter-operate with other RxSwift parts of the application
+ - 使用回调与完成和失败信息
+ - 使用很多代表异步返回信息
+ - 框架需要与应用程序的其他RxSwift部分进行互操作
+
+您还需要知道框架是否对数据必须处理哪个线程有限制。 因此，在创建RxSwift包装之前，先阅读文档是一个好主意。 不要忘了寻找现有的社区扩展 - 或者，如果你已经写了一个，那么考虑与社区共享它！：]

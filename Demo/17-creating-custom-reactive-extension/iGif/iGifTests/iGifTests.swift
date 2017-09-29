@@ -61,16 +61,15 @@ class iGifTests: XCTestCase {
   func testString() {
     let observable = URLSession.shared.rx.string(request: self.request)
     let string = "{\"array\":[\"foo\",\"bar\"],\"foo\":\"bar\"}"
-    expect(observable.toBlocking().firstOrNil()) == string
+    expect(observable) == string
   }
   
   func testJSON() {
     let observable = URLSession.shared.rx.json(request: self.request)
     let string = "{\"array\":[\"foo\",\"bar\"],\"foo\":\"bar\"}"
     let json = JSON(data: string.data(using: .utf8)!)
-    expect(observable.toBlocking().firstOrNil()) == json
-  }
-  
+    expect(observable) == json
+  }  
   func testError() {
     var erroredCorrectly = false
     let observable = URLSession.shared.rx.json(request: self.errorRequest)
@@ -84,6 +83,11 @@ class iGifTests: XCTestCase {
     }
     expect(erroredCorrectly) == true
   }
+
+  func test() {
+    let a = Observable.of(1.2)
+    expect(a) ≈ 1.191 ± 0.01
+  }
 }
 
 extension BlockingObservable {
@@ -95,3 +99,30 @@ extension BlockingObservable {
     }
   }
 }
+
+public func firstBeCloseTo<O: ObservableType>(_ expectedValue: Double, within delta: Double = DefaultDelta) -> Predicate<O> where O.E == Double {
+  return Predicate.define(matcher: { (actualExpression) -> PredicateResult in
+    let actualValue = try actualExpression.evaluate()?.toBlocking().first()
+    let errorMessage = "be close to <\(stringify(expectedValue))> (within \(stringify(delta)))"
+		let matches = (actualValue != nil) && (abs(actualValue!.doubleValue - expectedValue.doubleValue) < delta)
+    return PredicateResult(bool: matches,
+                           message: .expectedCustomValueTo(errorMessage, "<\(stringify(actualValue))>"))
+  })
+}
+
+infix operator ≈ : ComparisonPrecedence
+public func ≈<O: ObservableType>(lhs: Expectation<O>, rhs: Double) where O.E == Double {
+  lhs.to(firstBeCloseTo(rhs))
+}
+
+public func ≈<O: ObservableType>(lhs: Expectation<O>, rhs: (expected: Double, delta: Double)) where O.E == Double {
+  lhs.to(firstBeCloseTo(rhs.expected, within: rhs.delta))
+}
+
+infix operator ± : PlusMinusOperatorPrecedence
+public func ±(lhs: Double, rhs: Double) -> (expected: Double, delta: Double) {
+  return (expected: lhs, delta: rhs)
+}
+
+
+
