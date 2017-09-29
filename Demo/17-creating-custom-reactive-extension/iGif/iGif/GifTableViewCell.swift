@@ -43,6 +43,14 @@ class GifTableViewCell: UITableViewCell {
     guard let url = URL(string: stringUrl) else { return }
     let request = URLRequest(url: url)
     activityIndicator.startAnimating()
+    
+    let s = URLSession.shared.rx.data(request: request)
+      .observeOn(MainScheduler.instance)
+      .subscribe(onNext: { imageData in
+        self.gifImageView.animate(withGIFData: imageData)
+        self.activityIndicator.stopAnimating()
+      })
+    disposable.setDisposable(s)
   }
 }
 

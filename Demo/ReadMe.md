@@ -14,6 +14,12 @@ SerialDispatchQueueScheduler,  ConcurrentDispatchQueueScheduler, OperationQueueS
 
 TestScheduler
 
+## 17-creating-custom-reactive-extension
+
+RxSwift_v1.0笔记——17 Creating Custom Reactive Extensions
+
+SingleAssignmentDisposable, OHHTTPStubsResponse, RxBlocking, Nimble, RxNimble
+
 ## Combinestagram
 
 RxSwift_V1.0笔记——4: Observables and Subjects in Practice + 6: Filtering Operators in Practice
