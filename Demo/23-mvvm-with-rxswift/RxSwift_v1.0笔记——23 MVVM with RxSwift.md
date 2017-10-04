@@ -1,4 +1,4 @@
-## RxSwift_v1.0笔记——23 MVVM with RxSwift
+## \RxSwift_v1.0笔记——23 MVVM with RxSwift
 
 RxSwift是一个很大的话题，本书之前没有覆盖任何应用构架的细节。是因为RxSwift不会强迫在你的应用上使用任何特定的构架。不过，因为RxSwift与MVVM一起工作更合适，本章将专注于讨论讨论特殊的构架样式。
 
@@ -129,12 +129,12 @@ Note：人们常常会问当使用MVVM做项目时在哪里增加网络层，因
 ```
 在**TimelineFetcher.swift**， 滚动到 **init(account:jsonProvider:)**的底部，找到这行：
 
-```
+```Swift
 timeline = Observable<[Tweet]>.never()
 ```
 用以下内容替换那行：
 
-```
+```swift
 timeline = reachableTimerWithAccount
   .withLatestFrom(feedCursor.asObservable(), resultSelector:
     { account, cursor in
@@ -148,7 +148,7 @@ timeline = reachableTimerWithAccount
 
 现在增加下面内容到链：
 
-```
+```swift
 .flatMapLatest(jsonProvider)
 .map(Tweet.unboxMany)
 .shareReplayLatestWhileConnected()
@@ -164,7 +164,7 @@ timeline = reachableTimerWithAccount
 
 因为这个订阅被重复的调用，你也需要存储当前位置（或光标）以便你不会重复抓取同样的推文。接着在你输入的下面增加：
 
-```
+```swift
 timeline
   .scan(.none, accumulator: TimelineFetcher.currentCursor)
   .bindTo(feedCursor)
@@ -188,8 +188,8 @@ Note：本书不覆盖cursor的详细逻辑方面的知识，因为他是专用�
 它是一个很好的实践（但确定不是一个唯一的方式）来澄清在你的视图模型代码的三个部分的定义：
 
 1. Init：在这里你定义一个或多个inits来注入你所有的依赖。
-2. Input：包含任何公共属性，例如简单（plain）变量或RxSwift主题，它允许视图控制器提供输入。
-3. Output：包含任何公共属性（通常是observables），它提供视图模型的输出。通常有对象的列表来驱动一个表格或集合视图，或者是一个视图控制器用来驱动app的UI的其他类型的数据。
+2. Input：包含任何公共属性，例如简单（plain）变量或RxSwift subjects，它允许视图控制器提供输入。
+3. Output：包含任何公共属性（通常是observables），它提供视图模型的输出。通常用对象列表来驱动一个表格或集合视图，或者是一个视图控制器用来驱动app的UI的其他类型的数据。
 
 ![](http://upload-images.jianshu.io/upload_images/2224431-c466099001cbd0ec.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/400)
 
@@ -197,14 +197,14 @@ Note：本书不覆盖cursor的详细逻辑方面的知识，因为他是专用�
 
 是时候来增加更多的属性到视图模型了。首先，增加下面两个属性，他们既不是输入又不是输出，但它简单的帮助你持有注入的依赖：
 
-```
+```swift
 let list: ListIdentifier
 let account: Driver<TwitterAccount.AccountStatus>
 ```
 
 由于他们是常量，你的唯一初始化他们的机会是在 init(account:list:apiType)中。在初始化类顶部插入下面代码：
 
-```
+```swift
 self.account = account
 self.list = list
 ```
@@ -213,14 +213,16 @@ self.list = list
 
 例如，考虑一个让用户搜索数据库的app。你将绑定搜索文本框到视图模型的输入属性。当搜索词改变，视图模型将响应地搜索数据库并改变他的输出，它将依次（in turn）绑定到表格视图来显示结果。
 
-为当前的视图模型，你拥有的唯一输入是一个属性，它让你暂停和恢复timeline fetcher类。 TimelineFetcher已经具有（feature）一个 Variable<Bool>来做到这一点，所以在视图模型中你需要一个代理属性。
+当前的视图模型，你拥有的唯一输入是一个属性，它让你暂停和恢复timeline fetcher类。 TimelineFetcher已经具有（feature）一个 Variable<Bool>来做到这一点，所以在视图模型中你需要一个代理属性。
 
 在 ListTimelineViewModel输入部分，用方便的注释 // MARK: - Input标记的位置，插入下面代码：
 
+```swift
 var paused: Bool = false {
   didSet {
-​    fetcher.paused.value = paused
-  }
+    fetcher.paused.value = paused
+}
+```
 
 这个属性是一个简单的代理，它在fetcher类上设置 paused的值。
 

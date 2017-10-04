@@ -31,7 +31,15 @@ class ListTimelineViewModel {
   private let bag = DisposeBag()
   private let fetcher: TimelineFetcher
 
+  let list: ListIdentifier
+  let account: Driver<TwitterAccount.AccountStatus>
+
   // MARK: - Input
+  var paused: Bool = false {
+    didSet {
+      fetcher.paused.value = paused
+    }
+  }
 
   // MARK: - Output
 
@@ -39,7 +47,8 @@ class ListTimelineViewModel {
   init(account: Driver<TwitterAccount.AccountStatus>,
        list: ListIdentifier,
        apiType: TwitterAPIProtocol.Type = TwitterAPI.self) {
-
+  	self.account = account
+  	self.list = list
 
     // fetch and store tweets
     fetcher = TimelineFetcher(account: account, list: list, apiType: apiType)

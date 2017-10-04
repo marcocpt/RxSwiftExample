@@ -24,7 +24,7 @@ SingleAssignmentDisposable, OHHTTPStubsResponse, RxBlocking, Nimble, RxNimble
 
 RxSwift_v1.0笔记——23 MVVM with RxSwift ‼️‼️‼️Need Xcode 8‼️‼️‼️
 
-MVVM
+MVVM, ACAccount, notification, SLRequest, create, Reachability
 
 ## Combinestagram
 
