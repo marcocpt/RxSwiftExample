@@ -493,7 +493,7 @@
 				TargetAttributes = {
 					9C1EEAD01DF424B5009705BD = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 9MF8G8D9Y5;
+						DevelopmentTeam = KCFG2TH7LM;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 9C2F4C691DE9C8A300307687;
 					};
@@ -888,7 +888,7 @@
 			baseConfigurationReference = 8A8C4931A80465E5445366F4 /* Pods-TweetieAbstract-TweetieTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 9MF8G8D9Y5;
+				DEVELOPMENT_TEAM = KCFG2TH7LM;
 				INFOPLIST_FILE = TweetieTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.underplot.TweetieTests;
@@ -903,7 +903,7 @@
 			baseConfigurationReference = B65586D9FF970D4BC7F0781A /* Pods-TweetieAbstract-TweetieTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 9MF8G8D9Y5;
+				DEVELOPMENT_TEAM = KCFG2TH7LM;
 				INFOPLIST_FILE = TweetieTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.underplot.TweetieTests;
@@ -1028,7 +1028,7 @@
 				INFOPLIST_FILE = "iOS Tweetie/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.underplot.Tweetie.dhh;
+				PRODUCT_BUNDLE_IDENTIFIER = com.underplot.Tweetie.dhh.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -1044,7 +1044,7 @@
 				INFOPLIST_FILE = "iOS Tweetie/Assets/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.underplot.Tweetie.dhh;
+				PRODUCT_BUNDLE_IDENTIFIER = com.underplot.Tweetie.dhh.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};

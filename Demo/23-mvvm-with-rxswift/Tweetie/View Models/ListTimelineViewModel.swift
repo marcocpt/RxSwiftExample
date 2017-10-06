@@ -42,6 +42,9 @@ class ListTimelineViewModel {
   }
 
   // MARK: - Output
+  private(set) var tweets:
+  	Observable<(AnyRealmCollection<Tweet>, RealmChangeset?)>!
+  private(set) var loggedIn: Driver<Bool>!
 
   // MARK: - Init
   init(account: Driver<TwitterAccount.AccountStatus>,
@@ -53,6 +56,10 @@ class ListTimelineViewModel {
     // fetch and store tweets
     fetcher = TimelineFetcher(account: account, list: list, apiType: apiType)
 
+		fetcher.timeline
+      .subscribe(Realm.rx.add(update: true))
+    	.disposed(by: bag)
+
     bindOutput()
   }
 
@@ -60,5 +67,16 @@ class ListTimelineViewModel {
   private func bindOutput() {
     //bind tweets
     //bind if an account is available
+    guard let realm = try? Realm() else { return }
+    tweets = Observable.changeset(from: realm.objects(Tweet.self))
+
+    loggedIn = account
+      .map { status in
+        switch status {
+        case .unavailable: return false
+        case .authorized: return true
+        }
+    	}
+    	.asDriver(onErrorJustReturn: false)
   }
 }

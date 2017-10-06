@@ -78,7 +78,7 @@ class ListPeopleViewModel {
       .map { users in
         return (try? unbox(dictionaries: users, allowInvalidElements: true) as [User]) ?? []
       }
-      .bindTo(people)
-      .addDisposableTo(bag)
+      .bind(to: people)
+      .disposed(by: bag)
   }
 }

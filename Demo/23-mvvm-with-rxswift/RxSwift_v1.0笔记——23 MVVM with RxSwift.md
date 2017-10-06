@@ -1,4 +1,4 @@
-## \RxSwift_v1.0笔记——23 MVVM with RxSwift
+## RxSwift_v1.0笔记——23 MVVM with RxSwift
 
 RxSwift是一个很大的话题，本书之前没有覆盖任何应用构架的细节。是因为RxSwift不会强迫在你的应用上使用任何特定的构架。不过，因为RxSwift与MVVM一起工作更合适，本章将专注于讨论讨论特殊的构架样式。
 
@@ -230,18 +230,16 @@ var paused: Bool = false {
 
 在输出部分（通过注释标记），插入下面两个属性：
 
-```
+```swift
   private(set) var tweets: Observable<(AnyRealmCollection<Tweet>, RealmChangeset?)>!
   private(set) var loggedIn: Driver<Bool>!
 ```
 
- **tweets**包含最新 Tweet对象的列表。在任何推文被加载前，例如在用户登录了他们的Twitter账号前，默认值是nil。  **loggedIn**
-
-是一个Driver，它将在稍后被除数。
+ **tweets**包含最新 Tweet对象的列表。在任何推文被加载前，例如在用户登录了他们的Twitter账号前，默认值是nil。  **loggedIn**是一个Driver，它将在稍后被初始化。
 
 现在你能够订阅 TimelineFetcher的结果，并存储推文到Realm。当你使用RxRealm时，这当然是非常容易的。附加到 init(account:list:apiType:)：
 
-```
+```swift
 fetcher.timeline
   .subscribe(Realm.rx.add(update: true))
   .addDisposableTo(bag)
@@ -251,7 +249,7 @@ fetcher.timeline
 
 最后一段代码关注在你视图模型中的数据流入，所以剩下的就是构建视图模型的输出。 找到名为**bindOutput**的方法，然后插入：
 
-```
+```swift
 guard let realm = try? Realm() else {
   return
 }
@@ -260,7 +258,7 @@ tweets = Observable.changesetFrom(realm.objects(Tweet.self))
 
 当你学习了21章，“RxRealm”，你可以容易的用Realm的Resultes辅助类来创建一个observable序列。在上面的代码中，您可以从所有持久化的推文中创建一个结果集，并订阅该集合的更改。你呈现感兴趣的部分推文observable，它通常是你的试图控制器。
 
-下一步你需要考虑loggedIn输出属性。这个很容易照顾——你仅仅需要订阅账号并映射它的元素到true或false。附加下面内容到bindOutput：
+下一步你需要考虑loggedIn输出属性。这个很容易处理——你仅仅需要订阅账号并映射它的元素到true或false。附加下面内容到bindOutput：
 
 ```
 loggedIn = account
@@ -290,9 +288,9 @@ loggedIn = account
 1.  test_whenInitialized_storesInitParams()，它测试视图模型是否固化它注入的依赖。
 2.  test_whenInitialized_bindsTweets()，通过它的 tweets属性，它检查视图模型是否显示最新固化的推文。
 
-为了完成测试用例，你将增加一个新的测试：一个用来检测是否 loggedIn输出属性属性反应了账号的鉴定状态。增加下面代码：
+为了完成测试用例，你将增加一个新的测试：一个用来检测是否 loggedIn输出属性响应了账号的鉴定状态。增加下面代码：
 
-```
+```Swift
 func test_whenAccountAvailable_updatesAccountStatus() {
   let asyncExpect = expectation(description: "fullfill test")
 }
@@ -302,7 +300,7 @@ func test_whenAccountAvailable_updatesAccountStatus() {
 
 附加下面内容到方法中：
 
-```
+```swift
 let scheduler = TestScheduler(initialClock: 0)
 let observer = scheduler.createObserver(Bool.self)
 ```
@@ -311,7 +309,7 @@ let observer = scheduler.createObserver(Bool.self)
 
 现在增加下列代码：
 
-```
+```Swift
 let accountSubject = PublishSubject<TwitterAccount.AccountStatus>()
 let viewModel =
 createViewModel(accountSubject.asDriver(onErrorJustReturn: .unavailable))
@@ -321,7 +319,7 @@ createViewModel(accountSubject.asDriver(onErrorJustReturn: .unavailable))
 
 下一步你将订阅在测试下的observable。增加：
 
-```
+```swift
 let bag = DisposeBag()
 let loggedIn = viewModel.loggedIn.asObservable()
   .share()
@@ -331,7 +329,7 @@ let loggedIn = viewModel.loggedIn.asObservable()
 
 首先用以下代码订阅 loggedIn到测试观察者：
 
-```
+```swift
 loggedIn
   .subscribe(observer)
   .addDisposableTo(bag)
@@ -339,7 +337,7 @@ loggedIn
 
 然后，为了在完成发送测试值之后结束异步测试，请添加：
 
-```
+```swift
 loggedIn
   .subscribe(onCompleted: asyncExpect.fulfill)
   .addDisposableTo(bag)
@@ -347,7 +345,7 @@ loggedIn
 
 现在所有的订阅在这了，你简单的发射少许测试值。增加：
 
-```
+```swift
 accountSubject.onNext(.authorized(TestData.account))
 accountSubject.onNext(.unavailable)
 accountSubject.onCompleted()
@@ -366,13 +364,13 @@ waitForExpectations(timeout: 1.0, handler: { error in
 该代码等待异步期望的实现，然后检查记录事件是否是 .next(true)， .next(false)，和 .completed.的序列。
 
 ```
-Note：如果你更愿意，继续并使用RxBlocking重写这个代码。你已经在16章“Testing with RxTest”中学到了如何做
+Note：如果你愿意，使用RxBlocking继续重写这个代码。你已经在16章“Testing with RxTest”中学到了如何做
 ```
 
-接着，测试用例完成了。高隔离度的视图模型类让你容易的注入模拟对象和仿真输入。阅读测试套件类的其余部分，看看还有什么被测试。如果你想出一些新的测试那应该是很有用的，随意增加吧！
+这样，测试用例完成了。高隔离度的视图模型类让你容易的注入模拟对象和仿真输入。阅读测试用例类的其余部分，看看还有什么被测试。如果你想出一些新的测试那应该是很有用的，随意增加吧！
 
 ```
-Note：应为在Tweetie项目的视图模型非常好的隔离了应用基础的剩余部分，你不需要运行整个应用来运行测试。窥探iOS Tweetie / AppDelegate.swift，查看代码如何避免在测试过程中创建应用程序的导航和查看控制器。或者，您可以禁用主应用程序进行测试。
+Note：应为在Tweetie项目的视图模型非常好的隔离了应用基础的剩余部分，你不需要运行整个应用来运行测试。窥探iOS Tweetie / AppDelegate.swift，查看代码如何避免在测试过程中创建应用程序的导航和视图控制器。或者，您可以禁用主应用程序进行测试。
 ```
 
 现在你有了个全功能的视图模型，也包括在test。是时候使用它了！
@@ -389,18 +387,18 @@ Note：应为在Tweetie项目的视图模型非常好的隔离了应用基础的
 
 在 viewDidLoad()，调用bindUI()之前增加代码：
 
-```
+```swift
 title = "@\(viewModel.list.username)/\(viewModel.list.slug)"
 navigationItem.rightBarButtonItem =
-UIBarButtonItem(barButtonSystemItem: .bookmarks, target: nil, action:
-nil)
+  UIBarButtonItem(barButtonSystemItem: .bookmarks, target: nil, action:
+    nil)
 ```
 
 这将设置列表的名字作为标题并在导航栏右边创建一个新按钮项。
 
 下一步，绑定视图模型。插入下面代码到 bindUI()：
 
-```
+```swift
 navigationItem.rightBarButtonItem!.rx.tap
   .throttle(0.5, scheduler: MainScheduler.instance)
   .subscribe(onNext: { [weak self] _ in
@@ -411,9 +409,9 @@ navigationItem.rightBarButtonItem!.rx.tap
   .addDisposableTo(bag)
 ```
 
-你订阅右bar项的tap，然后throttle他们来防止任何双击。然后你调用 navigator属性的show(segue:sender:)方法来显示你呈现到屏幕的segue的意图。segue显示人的列表：已经选择Twitter列表成员。
+你订阅右bar项的tap，然后throttle他们来防止任何双击。然后你调用 navigator属性的show(segue:sender:)方法来显示你打算用segue来呈现的屏幕。segue显示Twitter列表中已经选择成员的列表。
 
-Navigator要么负责呈现请求的屏幕，要么丢弃你的意图，如果它决定执行此操作，那么它可能基于其他参数来决定忽略你希望呈现视图控制器的意图。
+Navigator要么负责呈现请求的屏幕，要么销毁你的意图，如果它决定执行此操作，那么它可能基于其他参数来决定忽略你希望呈现视图控制器的意图。
 
 ```
 Note：通过阅读Navigator类的定义来详细了解类的实现。它包含可导航屏幕所有可能的列表，并且您只能通过提供所有必需的输入参数来调用这些segues。
@@ -421,13 +419,13 @@ Note：通过阅读Navigator类的定义来详细了解类的实现。它包含�
 
 你也需要创建另一个绑定来在表格视图中显示最新推文。滚动到文件顶部，导入下面的库可以方便的绑定RxRealm结果到表格和集合视图：
 
-```
+```swift
 import RxRealmDataSources
 ```
 
 然后返回到 bindUI()并附加：
 
-```
+```swift
 let dataSource = RxTableViewRealmDataSource<Tweet>(cellIdentifier:
   "TweetCellView", cellType: TweetCellView.self) { cell, _, tweet in
   cell.update(with: tweet)
@@ -443,7 +441,7 @@ let dataSource = RxTableViewRealmDataSource<Tweet>(cellIdentifier:
 
 你现在能绑定数据资源到视图控制器的表格视图。在最后块的下面增加：
 
-```
+```swift
 viewModel.tweets
   .bindTo(tableView.rx.realmChanges(dataSource))
   .addDisposableTo(bag)
@@ -453,7 +451,7 @@ viewModel.tweets
 
 为这个视图控制器最后的绑定将依据是否用户登录到Twitter来决定在顶部显示或影藏。附加下面代码
 
-```
+```swift
 viewModel.loggedIn
   .drive(messageView.rx.isHidden)
   .addDisposableTo(bag)
@@ -461,7 +459,7 @@ viewModel.loggedIn
 
 这个绑定开关 messageView.isHidden是基于当前 loggedIn的值的。
 
-这部分展示了为什么绑定是MVVM范式的关键。对于你的视图控制器它仅作为“胶水”代码来服务，这样你就可以轻松地将问题分开。你的视图模型保持了大部分关于当前它运行的平台无关的内容，英文它不导入任何像UIKit或CocoaUId的框架。
+这部分展示了为什么绑定是MVVM范式的关键。对于你的视图控制器它仅作为“胶水”代码来服务，这样你就可以轻松地将问题分开。你的视图模型保持了大部分关于当前它运行的平台无关的内容，因为它不导入任何像UIKit或Cocoa的框架。
 
 运行app并观察所有你闪亮的新视图模型所驱动的绑定：
 

@@ -13,6 +13,7 @@ import RxCocoa
 import RxTest
 import Unbox
 import RealmSwift
+import RxRealm
 
 @testable import Tweetie
 
@@ -62,4 +63,37 @@ class ListTimelineViewModelTests: XCTestCase {
     })
   }
 
+
+  func test_whenAccountAvailable_updatesAccountStatus() {
+    let asyncExpect = expectation(description: "fullfill test")
+
+    let scheduler = TestScheduler(initialClock: 0)
+    let observer = scheduler.createObserver(Bool.self)
+
+    let accountSubject = PublishSubject<TwitterAccount.AccountStatus>()
+    let viewModel = createViewModel(accountSubject.asSharedSequence(onErrorJustReturn: .unavailable))
+
+    let bag = DisposeBag()
+    let loggedIn = viewModel.loggedIn.asObservable()
+    	.share()
+
+    loggedIn
+    	.subscribe(observer)
+    	.disposed(by: bag)
+
+    loggedIn
+      .subscribe(onCompleted: asyncExpect.fulfill)
+    	.disposed(by: bag)
+
+
+    accountSubject.onNext(.authorized(TestData.account))
+    accountSubject.onNext(.unavailable)
+    accountSubject.onCompleted()
+
+    waitForExpectations(timeout: 1.0) { (error) in
+      XCTAssertNil(error, error!.localizedDescription)
+      let expectedEvents = [next(0, true), next(0, false), completed(0)]
+      XCTAssertEqual(observer.events, expectedEvents)
+    }
+  }
 }
