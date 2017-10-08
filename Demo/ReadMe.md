@@ -54,6 +54,8 @@ URL, URLComponents, JSONSerialization, indicator
 
 [RxSwift_v1.0笔记——24 Building a Complete RxSwift App](http://www.jianshu.com/p/451b93c70b40)
 
+observe, Action, prepareForReuse, RxTableViewSectionedAnimatedDataSource
+
 ## RxPagination
 
 Action, APIKit, TableView
