@@ -38,10 +38,10 @@ extension Store {
         
         var debugDescription: String {
             let result = "TasksStateManager.state\n"
-                .appending("tasks = \(tasks)\n")
-                .appending("addingTask = \(addingTask)\n")
-                .appending("togglingTaskStatusForTasksWithIds = \(togglingTaskStatusForTasksWithIds)\n")
-                .appending("updatingSummaryForTasksWithId = \(String(describing: updatingSummaryForTasksWithId))\n")
+                + "tasks = \(tasks)\n"
+                + "addingTask = \(addingTask)\n"
+                + "togglingTaskStatusForTasksWithIds = \(togglingTaskStatusForTasksWithIds)\n"
+                + "updatingSummaryForTasksWithId = \(String(describing: updatingSummaryForTasksWithId))\n"
             
             return result
         }

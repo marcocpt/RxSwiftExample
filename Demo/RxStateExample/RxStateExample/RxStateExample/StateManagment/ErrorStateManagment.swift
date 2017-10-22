@@ -19,9 +19,7 @@ extension Store {
         
         /// A textual representation of this instance, suitable for debugging.
         var debugDescription: String {
-            let result = "ErrorStateManager.state\n"
-                .appending("silentError = \(String(describing: silentError.debugDescription))\n")
-                .appending("presentableError = \(String(describing: presentableError.debugDescription))\n")
+            let result = "ErrorStateManager.state\nsilentError = \(String(describing: silentError.debugDescription))\npresentableError = \(String(describing: presentableError.debugDescription))\n"
             
             return result
         }

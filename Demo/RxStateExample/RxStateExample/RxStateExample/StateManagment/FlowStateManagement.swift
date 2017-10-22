@@ -80,7 +80,7 @@ extension Store {
 extension StoreType {
     /// A convenience computed variable to extract `(CoordinatingService.State, CoordinatingService.Action)` from `CurrentStateLastAction`
     var coordinatingServiceCurrentStateLastAction: Driver<(Store.FlowState, Store.FlowAction)> {
-        let coordinatingServiceCurrentStateLastAction = currentStateLastAction
+        let coordinatingServiceCurrentStateLastAction = stateLastAction
             .flatMap { (states: [SubstateType], lastAction: ActionType?) -> Driver<(Store.FlowState, Store.FlowAction)> in
                 for state in states {
                     guard let coordinatingServiceState = state as? Store.FlowState else { continue }

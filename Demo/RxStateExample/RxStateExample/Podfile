@@ -1,5 +1,6 @@
 def common_pods
-    pod 'RxState', '0.5.0'
+  #pod 'RxState', '0.5.0'
+  	pod 'RxState', :git => 'https://github.com/marcocpt/RxState'
     pod 'RxSwift', '3.5.0'
     pod 'RxCocoa', '3.5.0'
     pod 'RxOptional', '3.1.3'

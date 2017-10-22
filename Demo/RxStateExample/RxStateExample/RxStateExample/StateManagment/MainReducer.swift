@@ -34,6 +34,7 @@ let mainReducer: MainReducer = { (state: [SubstateType], action: ActionType) -> 
         state[tasksStateIndex] = tasksState as SubstateType
         
     case let action as Store.FlowAction:
+      	state.updateState(action)
         guard var (flowStateIndex, flowState) = state
             .enumerated()
             .first(where: { (_: Int, state: SubstateType) -> Bool in
@@ -55,3 +56,20 @@ let mainReducer: MainReducer = { (state: [SubstateType], action: ActionType) -> 
     // Return the new `App State`
     return state
 }
+
+extension Collection {
+  func updateState<T: ActionType, S: SubstateType>(_ action: T) where Self.Element == (SubstateType) ->  S {
+		guard var (stateIndex, stated) = self
+    	.enumerated()
+      .first(where: { (_, state) -> Bool in
+        let result = state is S
+        return result
+      }) as? (Int, T)
+      else {
+        fatalError("You need to register `Store.TasksState` first")
+    }
+    stated = Store.reduce(state: stated, action: action)
+    self[stateIndex] = stated as SubstateType
+  }
+}
+
